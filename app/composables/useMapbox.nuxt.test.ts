@@ -1,8 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMapbox } from './useMapbox'
 
+const mapInstanceMock = vi.hoisted(() => ({
+    remove: vi.fn(),
+}))
+
 const mapboxMock = vi.hoisted(() => ({
-    Map: vi.fn(),
+    Map: vi.fn(function () {
+        return mapInstanceMock
+    }),
     accessToken: '',
 }))
 
@@ -12,7 +18,8 @@ vi.mock('mapbox-gl', () => ({
 
 describe('useMapbox', () => {
     beforeEach(() => {
-        mapboxMock.Map.mockReset()
+        mapboxMock.Map.mockClear()
+        mapInstanceMock.remove.mockClear()
         mapboxMock.accessToken = ''
         useRuntimeConfig().public.mapboxToken = 'pk.test'
     })
@@ -26,6 +33,18 @@ describe('useMapbox', () => {
         expect(mapboxMock.Map).toHaveBeenCalledTimes(1)
         expect(mapboxMock.Map).toHaveBeenCalledWith(options)
         expect(mapboxMock.accessToken).toBe('pk.test')
+    })
+
+    it('Should remove the previous Mapbox Map when createMap is called again', async () => {
+        const { createMap } = useMapbox()
+
+        await createMap({ container: 'map' } as never)
+        expect(mapInstanceMock.remove).not.toHaveBeenCalled()
+
+        await createMap({ container: 'map' } as never)
+
+        expect(mapInstanceMock.remove).toHaveBeenCalledTimes(1)
+        expect(mapboxMock.Map).toHaveBeenCalledTimes(2)
     })
 
     it('Should throw when the Mapbox access token is missing', async () => {

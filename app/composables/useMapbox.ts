@@ -15,6 +15,7 @@ export function useMapbox() {
 
         const mapboxgl = (await import('mapbox-gl')).default
         mapboxgl.accessToken = mapboxToken
+        map.value?.remove()
         map.value = new mapboxgl.Map(options)
         return map.value
     }
