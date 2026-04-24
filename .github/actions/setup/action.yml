@@ -1,0 +1,21 @@
+name: Setup project
+description: Sets up Node from .nvmrc and restores node_modules/.nuxt, installing on cache miss.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+    - name: Restore node_modules and .nuxt
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          .nuxt
+        key: ${{ runner.os }}-deps-${{ hashFiles('package-lock.json', 'nuxt.config.ts') }}
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: npm ci
