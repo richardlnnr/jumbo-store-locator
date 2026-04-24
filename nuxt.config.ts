@@ -2,7 +2,12 @@
 export default defineNuxtConfig({
     modules: ['@nuxt/ui', '@nuxt/test-utils/module', '@nuxt/eslint'],
     devtools: { enabled: true },
-    css: ['~/assets/css/main.css'],
+    css: ['~/assets/css/main.css', 'mapbox-gl/dist/mapbox-gl.css'],
+    runtimeConfig: {
+        public: {
+            mapboxToken: '',
+        },
+    },
     compatibilityDate: '2025-07-15',
     typescript: {
         tsConfig: {

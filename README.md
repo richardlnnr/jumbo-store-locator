@@ -20,6 +20,17 @@ yarn install
 bun install
 ```
 
+## Mapbox setup
+
+Mapbox GL JS is wired in through the `useMapbox()` composable (`app/composables/useMapbox.ts`). Before running the app, provide a public Mapbox access token:
+
+```bash
+cp .env.example .env
+# then edit .env and set NUXT_PUBLIC_MAPBOX_TOKEN=pk.your-public-token
+```
+
+The token is exposed through `runtimeConfig.public.mapboxToken` and is safe to ship to the browser (public Mapbox tokens are designed for that). Restart the dev server after editing `.env`.
+
 ## Development Server
 
 Start the development server on `http://localhost:3000`:
