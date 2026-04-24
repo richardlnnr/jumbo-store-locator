@@ -19,7 +19,7 @@ describe('MapBox', () => {
         expect(options.container).toBeInstanceOf(HTMLElement)
         expect(options.style).toBe('mapbox://styles/mapbox/streets-v12')
         expect(options.center).toEqual([5.387957, 52.155576])
-        expect(options.zoom).toBe(4)
+        expect(options.zoom).toBe(8)
         expect(wrapper.html()).toContain('h-[400px]')
         expect(wrapper.html()).toContain('w-full')
     })
