@@ -5,6 +5,19 @@ export default defineConfig({
     test: {
         globals: true,
         passWithNoTests: true,
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'lcov'],
+            reportsDirectory: 'coverage',
+            include: ['app/**/*.{ts,vue}'],
+            exclude: [
+                '**/*.test.ts',
+                '**/*.nuxt.test.ts',
+                '**/*.config.*',
+                '.nuxt/**',
+                '.output/**',
+            ],
+        },
         projects: [
             {
                 test: {
