@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    modules: ['@nuxt/ui', '@nuxt/test-utils/module', '@nuxt/eslint', '@vueuse/nuxt'],
+    modules: ['@nuxt/ui', '@nuxt/image', '@nuxt/fonts', '@nuxt/test-utils/module', '@nuxt/eslint', '@vueuse/nuxt'],
     devtools: { enabled: true },
     css: ['~/assets/css/main.css', 'mapbox-gl/dist/mapbox-gl.css'],
     runtimeConfig: {
