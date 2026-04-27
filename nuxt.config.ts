@@ -24,4 +24,13 @@ export default defineNuxtConfig({
             },
         },
     },
+    fonts: {
+        families: [
+            { name: 'JumboTheSans', provider: 'local' },
+        ],
+        defaults: {
+            weights: [400, 700, 900],
+            styles: ['normal'],
+        },
+    },
 })

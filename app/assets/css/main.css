@@ -1,2 +1,6 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+body {
+    font-family: 'JumboTheSans', system-ui, sans-serif;
+}
