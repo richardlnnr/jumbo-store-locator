@@ -48,6 +48,47 @@ The token is exposed through `runtimeConfig.public.mapboxToken` and is safe to s
 npm install
 ```
 
+## Design Tokens
+
+Canonical design tokens live in [`app/assets/css/tokens.css`](./app/assets/css/tokens.css) as a Tailwind v4 `@theme static` block. Defining a token there both creates the CSS variable and generates the matching Tailwind utility (e.g. `--color-yellow-500` ↔ `bg-yellow-500` / `text-yellow-500` / `border-yellow-500`).
+
+### Categories
+
+- **Color** — `--color-{name}-{50..950}` (yellow, neutral, green, red, orange, cyan, blue, pink).
+- **Type** — `--text-{2xs..xl}` covering 10 / 12 / 14 / 16 / 20 / 24 px.
+- **Spacing** — `--spacing-{2xs..3xl}` covering 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 px (plus the Tailwind base `--spacing: 0.25rem`).
+- **Radius** — `--radius-{sm,md,lg,xl,full}` at 4 / 8 / 12 / 16 / 9999 px.
+- **Shadow** — `--shadow-{sm,md,lg}`.
+
+### Rules
+
+- **Color tokens are palette-style, never use-style.** Name by hue and scale step (`--color-neutral-300`), never by role (no `--border`, no `--success-bg`). Semantic meaning is applied at the consumer.
+- **Spacing, sizing, and radius values must be multiples of 4.** Typography is exempt — type rhythms allow odd values.
+- **Brand hexes come from [jumbo.com](https://www.jumbo.com)** (the live "kompas" stylesheet). New colors require a verified jumbo.com source — never invented, interpolated, or extrapolated. Steps without a brand-site source stay undefined and inherit Tailwind v4 defaults; this is intentional for sparse palettes (yellow, orange, cyan, blue, pink).
+
+### Consumption
+
+Either Tailwind utility classes:
+
+```html
+<div class="bg-yellow-500 text-neutral-950 p-md rounded-md shadow-md" />
+```
+
+…or raw CSS variables in scoped styles:
+
+```css
+.badge {
+    background: var(--color-green-50);
+    color: var(--color-green-700);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-md);
+}
+```
+
+### Nuxt UI integration
+
+[`app/app.config.ts`](./app/app.config.ts) aliases Nuxt UI's `primary` and `neutral` color slots to our `yellow` and `neutral` palettes, so every Nuxt UI component (`UButton`, `UInput`, etc.) inherits the brand without per-component overrides.
+
 ## Development Server
 
 Start the dev server on `http://localhost:3000`:
