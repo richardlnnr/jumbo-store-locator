@@ -29,7 +29,11 @@ Copy `.env.example` to `.env` and set `NUXT_PUBLIC_MAPBOX_TOKEN=pk.…`. The tok
 
 ## Architecture
 
-TBD.
+### Code style
+
+ESLint stylistic rules are configured in `nuxt.config.ts` (`eslint.config.stylistic`): 4-space indent, single quotes, no semicolons, trailing commas always. `lint-staged` auto-fixes JS/TS/Vue on commit (`.husky/pre-commit`). Match this style when writing new code; CI fails on any warning.
+
+**Always use arrow functions** for top-level functions, helpers, and callbacks: `const fn = (args) => …` instead of `function fn(args) {}`. Class methods and Vue component methods are exceptions. When you touch a file with legacy `function` declarations, migrate them opportunistically — but isolate the move in its own commit so the diff stays reviewable.
 
 ## Tests
 
@@ -45,8 +49,6 @@ Coverage includes only `app/**/*.{ts,vue}`; configs and test files are excluded.
 ## Style
 
 **Use Nuxt UI for every UI primitive.** Buttons, inputs, modals, cards, layouts, icons, toasts, etc. must come from `@nuxt/ui` (`<UButton>`, `<UInput>`, `<UModal>`, `<UCard>`, `<UApp>`, …). Do not hand-roll equivalents in raw HTML/Tailwind, do not pull in another component library, and do not wrap a Nuxt UI component just to rename it. If a primitive seems missing, check the Nuxt UI catalog first (`https://ui.nuxt.com`); only fall back to a custom component when Nuxt UI genuinely has no equivalent, and document why in the component's source. Tailwind utility classes are fine for layout and spacing on top of Nuxt UI components — but the components themselves must be Nuxt UI.
-
-ESLint stylistic rules are configured in `nuxt.config.ts` (`eslint.config.stylistic`): 4-space indent, single quotes, no semicolons, trailing commas always. `lint-staged` auto-fixes JS/TS/Vue on commit (`.husky/pre-commit`). Match this style when writing new code; CI fails on any warning.
 
 ## CI
 
