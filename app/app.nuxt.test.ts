@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import { shallowRef } from 'vue'
+import { nextTick, shallowRef } from 'vue'
 import App from './app.vue'
 
 mockNuxtImport('useMapbox', () => () => ({
@@ -13,5 +13,12 @@ describe('app.vue', () => {
         const component = await mountSuspended(App)
 
         expect(component.html()).toBeTruthy()
+    })
+
+    it('Should set the document title from the default English locale', async () => {
+        await mountSuspended(App)
+        await nextTick()
+
+        expect(document.title).toBe('Jumbo store locator')
     })
 })
