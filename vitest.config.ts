@@ -9,10 +9,11 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['text', 'lcov'],
             reportsDirectory: 'coverage',
-            include: ['app/**/*.{ts,vue}'],
+            include: ['app/**/*.{ts,vue}', 'server/**/*.ts', 'shared/**/*.ts'],
             exclude: [
                 '**/*.test.ts',
                 '**/*.nuxt.test.ts',
+                '**/*.mock.ts',
                 '**/*.config.*',
                 '.nuxt/**',
                 '.output/**',

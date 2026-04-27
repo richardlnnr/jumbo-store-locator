@@ -56,6 +56,14 @@ Start the dev server on `http://localhost:3000`:
 npm run dev
 ```
 
+## API
+
+### `GET /api/stores`
+
+Returns a [GeoJSON](https://geojson.org/) `FeatureCollection` where each `Feature<Point>` is a Jumbo store. Coordinates live in `geometry.coordinates` as `[longitude, latitude]` (per RFC 7946); the rest of the store record (id, name, websiteURL, facilities, commerce availability, address, opening hours) is carried in `properties`.
+
+The handler reads `server/assets/data/jumbo-store-data.json` on every request and projects it into GeoJSON, treating the file as a thin integration layer over an upstream feed: adding a store to the source JSON surfaces it through `/api/stores` with no code change.
+
 ## Production
 
 This project is deployed via **Vercel**:
