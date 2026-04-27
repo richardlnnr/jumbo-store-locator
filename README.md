@@ -1,16 +1,16 @@
 # Jumbo Store Locator
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=coverage)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=bugs)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-frontend-assignment&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-frontend-assignment)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=coverage)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=bugs)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=richardlnnr_jumbo-store-locator&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=richardlnnr_jumbo-store-locator)
 
 ## Deployment
 
