@@ -1,0 +1,99 @@
+@theme static {
+    /* =============================================================
+       COLORS — sourced from jumbo.com (kompas design system).
+       Only hexes present on the live site are defined; gaps inherit
+       Tailwind v4 defaults. New steps require a brand-site source.
+       ============================================================= */
+
+    /* ---- Yellow / Brand ---- */
+    --color-yellow-50:  #fdf8e8;
+    --color-yellow-200: #f5d474;
+    --color-yellow-500: #eeb717;
+    --color-yellow-900: #473707;
+
+    /* ---- Neutral ---- */
+    --color-neutral-50:  #f7f7f7;
+    --color-neutral-100: #f1f1f1;
+    --color-neutral-200: #e3e3e3;
+    --color-neutral-300: #d6d6d6;
+    --color-neutral-400: #c8c8c8;
+    --color-neutral-500: #919191;
+    --color-neutral-600: #757575;
+    --color-neutral-700: #5e5e5e;
+    --color-neutral-800: #464646;
+    --color-neutral-900: #232323;
+    --color-neutral-950: #171717;
+
+    /* ---- Green ---- */
+    --color-green-50:  #e7f9ed;
+    --color-green-500: #0eb240;
+    --color-green-600: #0b8b32;
+    --color-green-700: #09772b;
+    --color-green-800: #086324;
+    --color-green-900: #064f1c;
+    --color-green-950: #053b15;
+
+    /* ---- Red ---- */
+    --color-red-50:  #fde5e5;
+    --color-red-500: #e90000;
+    --color-red-600: #cc1a1a;
+    --color-red-700: #ba0000;
+    --color-red-800: #a30000;
+    --color-red-900: #8c0000;
+    --color-red-950: #460000;
+
+    /* ---- Orange ---- */
+    --color-orange-50:  #fdf1e9;
+    --color-orange-400: #ee7e38;
+    --color-orange-500: #ec7022;
+    --color-orange-900: #47220a;
+
+    /* ---- Cyan ---- */
+    --color-cyan-50:  #e8f6fb;
+    --color-cyan-600: #1497c3;
+
+    /* ---- Blue ---- */
+    --color-blue-500: #0a4fff;
+
+    /* ---- Pink ---- */
+    --color-pink-50: #f6e7f2;
+
+    /* =============================================================
+       TYPE — even-numbered scale, multiples of 2
+       ============================================================= */
+    --text-2xs:  10px;
+    --text-xs:   12px;
+    --text-sm:   14px;
+    --text-base: 16px;
+    --text-lg:   20px;
+    --text-xl:   24px;
+
+    /* =============================================================
+       SPACING — explicit named scale, all multiples of 4
+       ============================================================= */
+    --spacing:     0.25rem;
+    --spacing-2xs: 4px;
+    --spacing-xs:  8px;
+    --spacing-sm:  12px;
+    --spacing-md:  16px;
+    --spacing-lg:  24px;
+    --spacing-xl:  32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+
+    /* =============================================================
+       RADIUS — multiples of 4 (issue's 6/10 normalized out)
+       ============================================================= */
+    --radius-sm:    4px;
+    --radius-md:    8px;
+    --radius-lg:   12px;
+    --radius-xl:   16px;
+    --radius-full: 9999px;
+
+    /* =============================================================
+       SHADOW
+       ============================================================= */
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.04);
+    --shadow-md: 0 2px 8px rgb(0 0 0 / 0.08);
+    --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.12);
+}
