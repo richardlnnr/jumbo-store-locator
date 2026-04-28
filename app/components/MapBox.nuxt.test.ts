@@ -11,7 +11,7 @@ mockNuxtImport('useMapbox', () => () => ({
 }))
 
 describe('MapBox', () => {
-    it('Should mount a full-width map container and call createMap with the streets style', async () => {
+    it('Should mount a parent-filling map container and call createMap with the streets style', async () => {
         const wrapper = await mountSuspended(MapBox)
 
         expect(createMapMock).toHaveBeenCalledTimes(1)
@@ -20,7 +20,7 @@ describe('MapBox', () => {
         expect(options.style).toBe('mapbox://styles/mapbox/streets-v12')
         expect(options.center).toEqual([5.387957, 52.155576])
         expect(options.zoom).toBe(8)
-        expect(wrapper.html()).toContain('h-[400px]')
+        expect(wrapper.html()).toContain('h-full')
         expect(wrapper.html()).toContain('w-full')
     })
 })

@@ -2,6 +2,20 @@
   "app": {
     "title": "Jumbo winkelzoeker"
   },
+  "app-shell": {
+    "list-region": "Winkellijst",
+    "map-region": "Winkelkaart"
+  },
+  "app-header": {
+    "brand-name": "Jumbo",
+    "tagline": "Winkelzoeker"
+  },
+  "store-list": {
+    "placeholder": "Winkellijst komt binnenkort"
+  },
+  "store-map": {
+    "placeholder": "Winkelkaart komt binnenkort"
+  },
   "status": {
     "open-now": "Nu geopend",
     "closed": "Gesloten",

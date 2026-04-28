@@ -1,12 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
-import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import { nextTick, shallowRef } from 'vue'
+import { describe, expect, it } from 'vitest'
+import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { nextTick } from 'vue'
 import App from './app.vue'
-
-mockNuxtImport('useMapbox', () => () => ({
-    createMap: vi.fn(),
-    map: shallowRef(null),
-}))
 
 describe('app.vue', () => {
     it('Should mount inside the Nuxt runtime', async () => {

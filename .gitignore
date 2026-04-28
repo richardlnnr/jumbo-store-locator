@@ -9,6 +9,9 @@ dist
 # Test coverage
 coverage
 
+# Playwright MCP scratch (screenshots, console logs, snapshots)
+.playwright-mcp
+
 # Node dependencies
 node_modules
 
