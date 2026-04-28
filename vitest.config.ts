@@ -1,6 +1,11 @@
 import { defineConfig } from 'vitest/config'
 import { defineVitestProject } from '@nuxt/test-utils/config'
 
+// Pin the test timezone so date-sensitive logic (store opening hours,
+// "open now / closed" labels) produces the same result on every machine —
+// dev laptops in Brazil, CI runners in UTC, and reviewers in NL.
+process.env.TZ = 'Europe/Amsterdam'
+
 export default defineConfig({
     test: {
         globals: true,
