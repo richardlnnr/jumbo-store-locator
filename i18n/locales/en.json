@@ -7,8 +7,10 @@
     "map-region": "Store map"
   },
   "app-header": {
-    "brand-name": "Jumbo",
-    "tagline": "Store locator"
+    "tagline": "Store locator",
+    "language-toggle": {
+      "label": "Language"
+    }
   },
   "store-list": {
     "placeholder": "Store list coming soon"
