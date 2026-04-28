@@ -1,0 +1,12 @@
+{
+  "app": {
+    "title": "Jumbo winkelzoeker"
+  },
+  "status": {
+    "open-now": "Nu geopend",
+    "closed": "Gesloten",
+    "opens-today-at": "Vandaag open om {time}",
+    "opens-tomorrow-at": "Morgen open om {time}",
+    "opens-on": "Open op {weekday} om {time}"
+  }
+}
