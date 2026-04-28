@@ -54,11 +54,10 @@ Coverage includes only `app/**/*.{ts,vue}`; configs and test files are excluded.
 
 - `.github/workflows/pull-request.yml` runs setup → lint, test (uploads `coverage/lcov.info`), typecheck, build, and SonarCloud (consumes the uploaded coverage).
 - `.github/workflows/main.yml` runs SonarCloud on push to `main` with a fresh coverage run.
-- `.github/actions/setup` is a composite action that pins Node from `.nvmrc`, caches `node_modules` + `.nuxt` keyed on `package-lock.json` + `nuxt.config.ts`, and `npm ci` on cache miss. Reuse it from new jobs instead of duplicating setup steps.
-- Both workflows set `HUSKY=0` so `npm ci` does not try to install hooks in CI.
+- `.github/actions/setup` is a composite action that pins Node from `.nvmrc`, caches `node_modules` + `.nuxt` keyed on `package-lock.json` + `nuxt.config.ts`, and runs `npm install` on cache miss. `npm install` is used instead of `npm ci` so CI tolerates cross-platform lockfile drift — when a contributor runs `npm install` on macOS the lockfile records macOS-only optional binaries (`sharp`, `@emnapi/*`, `@parcel/watcher`) that Linux CI's `npm ci` would reject. `npm install` is idempotent when `package.json` and `package-lock.json` already agree, so unchanged-deps PRs still produce a clean install. Reuse this action from new jobs instead of duplicating setup steps.
+- Both workflows set `HUSKY=0` so `npm install` does not try to install Git hooks in CI.
 
 ## Gotchas
 
-- Native deps (`mapbox-gl`) ship platform-specific optional binaries. After adding/upgrading any dep with native bindings on macOS, delete `node_modules` and `package-lock.json`, then reinstall before committing — otherwise Linux CI breaks on `npm ci` (regression history in `548ea84`).
 - Do not import `mapbox-gl` at module top level in any file that runs on the server. The dynamic import in `useMapbox` is load-bearing.
 - `nuxt typecheck` reads from `tsconfig.json`'s project references (`./.nuxt/tsconfig.*.json`), which only exist after `nuxt prepare` has run. `postinstall` handles this; if typecheck complains about missing files, run `npx nuxt prepare` first.
