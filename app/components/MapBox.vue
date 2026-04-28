@@ -16,10 +16,8 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="bg-neutral-50/10 border border-neutral-200 dark:bg-neutral-950/5 dark:border-neutral-800 overflow-hidden rounded-lg">
-        <div
-            ref="mapEl"
-            class="h-[400px] w-full"
-        />
-    </div>
+    <div
+        ref="mapEl"
+        class="h-full w-full"
+    />
 </template>

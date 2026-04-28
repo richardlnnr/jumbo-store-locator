@@ -8,6 +8,9 @@ export default defineNuxtConfig({
             mapboxToken: '',
         },
     },
+    routeRules: {
+        '/': { redirect: '/stores' },
+    },
     compatibilityDate: '2025-07-15',
     typescript: {
         tsConfig: {

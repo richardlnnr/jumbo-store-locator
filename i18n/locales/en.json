@@ -2,6 +2,20 @@
   "app": {
     "title": "Jumbo store locator"
   },
+  "app-shell": {
+    "list-region": "Store list",
+    "map-region": "Store map"
+  },
+  "app-header": {
+    "brand-name": "Jumbo",
+    "tagline": "Store locator"
+  },
+  "store-list": {
+    "placeholder": "Store list coming soon"
+  },
+  "store-map": {
+    "placeholder": "Store map coming soon"
+  },
   "status": {
     "open-now": "Open now",
     "closed": "Closed",
