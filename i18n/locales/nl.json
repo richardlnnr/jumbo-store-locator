@@ -19,8 +19,9 @@
     "placeholder": "Winkelkaart komt binnenkort"
   },
   "status": {
-    "open-now": "Nu geopend",
+    "open": "Open",
     "closed": "Gesloten",
+    "closes-at": "Sluit om {time}",
     "opens-today-at": "Vandaag open om {time}",
     "opens-tomorrow-at": "Morgen open om {time}",
     "opens-on": "Open op {weekday} om {time}"

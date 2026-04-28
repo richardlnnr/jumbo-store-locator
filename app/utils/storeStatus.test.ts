@@ -1,0 +1,122 @@
+import { describe, expect, it } from 'vitest'
+
+import enLocale from '../../i18n/locales/en.json'
+import nlLocale from '../../i18n/locales/nl.json'
+
+import { buildStore, everyDay, hours, weekHours } from './storeStatus.mock'
+import { getStoreStatus } from './storeStatus'
+
+const TUE = (h: number, m = 0, s = 0) => new Date(2025, 0, 7, h, m, s)
+const WED = (h: number, m = 0, s = 0) => new Date(2025, 0, 8, h, m, s)
+const SAT = (h: number, m = 0, s = 0) => new Date(2025, 0, 11, h, m, s)
+const MON = (h: number, m = 0, s = 0) => new Date(2025, 0, 13, h, m, s)
+
+describe('getStoreStatus', () => {
+    it('Should report open with the closing time when now is inside today\'s window', () => {
+        const store = buildStore(everyDay(hours('08:00', '22:00')))
+
+        const status = getStoreStatus(store, TUE(14))
+
+        expect(status.isOpen).toBe(true)
+        expect(status.next).toEqual({
+            key: 'status.closes-at',
+            at: TUE(22),
+        })
+    })
+
+    it('Should report closed with today\'s opening time when now is before opens-at', () => {
+        const store = buildStore(everyDay(hours('08:00', '22:00')))
+
+        const status = getStoreStatus(store, TUE(6))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next).toEqual({
+            key: 'status.opens-today-at',
+            at: TUE(8),
+        })
+    })
+
+    it('Should report closed with tomorrow\'s opening time when today\'s window has already ended', () => {
+        const store = buildStore(everyDay(hours('08:00', '22:00')))
+
+        const status = getStoreStatus(store, TUE(23, 30))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next).toEqual({
+            key: 'status.opens-tomorrow-at',
+            at: WED(8),
+        })
+    })
+
+    it('Should skip closed days and return opens-on with the next available weekday', () => {
+        const store = buildStore(weekHours({
+            saturday: hours('08:00', '11:00'),
+            monday: hours('08:00', '22:00'),
+        }))
+
+        const status = getStoreStatus(store, SAT(12))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next).toEqual({
+            key: 'status.opens-on',
+            at: MON(8),
+        })
+    })
+
+    it('Should return next=null when the store has no opening hours for any weekday', () => {
+        const store = buildStore(weekHours({}))
+
+        const status = getStoreStatus(store, TUE(14))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next).toBeNull()
+    })
+
+    it('Should treat the last second of the day as closed and point to tomorrow\'s opening', () => {
+        const store = buildStore(everyDay(hours('08:00', '22:00')))
+
+        const status = getStoreStatus(store, TUE(23, 59, 59))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next).toEqual({
+            key: 'status.opens-tomorrow-at',
+            at: WED(8),
+        })
+    })
+
+    it('Should consider the store open at the exact opening minute (inclusive boundary)', () => {
+        const store = buildStore(everyDay(hours('08:00', '22:00')))
+
+        const status = getStoreStatus(store, TUE(8, 0, 0))
+
+        expect(status.isOpen).toBe(true)
+        expect(status.next?.key).toBe('status.closes-at')
+    })
+
+    it('Should consider the store closed at the exact closing minute (exclusive boundary)', () => {
+        const store = buildStore(everyDay(hours('08:00', '22:00')))
+
+        const status = getStoreStatus(store, TUE(22, 0, 0))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next).toEqual({
+            key: 'status.opens-tomorrow-at',
+            at: WED(8),
+        })
+    })
+
+    it('Should only return translation keys that exist in every supported locale', () => {
+        const possibleKeys = [
+            'status.closes-at',
+            'status.opens-today-at',
+            'status.opens-tomorrow-at',
+            'status.opens-on',
+        ] as const
+
+        for (const fullKey of possibleKeys) {
+            const suffix = fullKey.replace(/^status\./, '')
+            expect(enLocale.status).toHaveProperty(suffix)
+            expect(nlLocale.status).toHaveProperty(suffix)
+        }
+    })
+})
