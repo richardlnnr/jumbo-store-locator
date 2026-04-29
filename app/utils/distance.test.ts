@@ -10,7 +10,7 @@ import {
     NEARBY_AMSTERDAM_990M,
     ROTTERDAM,
     SYDNEY,
-} from './distance.mock'
+} from '../../shared/types/store.mock'
 import { getDistanceLabel } from './distance'
 
 const TOLERANCE = 0.005

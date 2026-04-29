@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { storesToGeoJson } from './storesToGeoJson'
-import { supermarketFixture, virtualFixture } from './storesToGeoJson.mock'
+import { supermarketFixture, virtualFixture } from '../../shared/types/store.mock'
 
 describe('storesToGeoJson', () => {
     it('Should return a FeatureCollection with one Feature per store', () => {
