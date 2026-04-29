@@ -50,6 +50,26 @@ Coverage includes only `app/**/*.{ts,vue}`; configs and test files are excluded.
 
 **Use Nuxt UI for every UI primitive.** Buttons, inputs, modals, cards, layouts, icons, toasts, etc. must come from `@nuxt/ui` (`<UButton>`, `<UInput>`, `<UModal>`, `<UCard>`, `<UApp>`, …). Do not hand-roll equivalents in raw HTML/Tailwind, do not pull in another component library, and do not wrap a Nuxt UI component just to rename it. If a primitive seems missing, check the Nuxt UI catalog first (`https://ui.nuxt.com`); only fall back to a custom component when Nuxt UI genuinely has no equivalent, and document why in the component's source. Tailwind utility classes are fine for layout and spacing on top of Nuxt UI components — but the components themselves must be Nuxt UI.
 
+## Responsive design
+
+**Author every component mobile-first.** The base styles target the smallest screen, and larger breakpoints are layered on top with Tailwind's `sm:`, `md:`, `lg:`, `xl:`, and `2xl:` variants (which compile to `min-width` media queries). Do not invert this — the codebase relies on the unprefixed class always describing the mobile state, so a contributor can reason about a component on a phone by reading only the unprefixed classes.
+
+**Forbidden patterns**:
+
+- Tailwind `max-*:` variants (`max-md:flex-col`, `max-sm:hidden`, etc.). They reverse the reading order and mix poorly with the rest of the codebase.
+- `@media (max-width: …)` queries inside `<style>` blocks. Use `@media (min-width: …)` if a raw query is unavoidable, but prefer Tailwind utilities first.
+- Layouts written as desktop and "patched" smaller. If the base set of classes only makes sense on a wide viewport, the component is desktop-first — refactor it.
+
+**Acceptable mobile-first idioms**:
+
+- `class="hidden md:block"` — the element is genuinely mobile-hidden. The base state (`hidden`) describes the mobile reality; `md:block` reveals it on wider screens. This is mobile-first by Tailwind's definition, even though the rendered content is desktop-only.
+- `class="flex flex-col md:flex-row"` — stack on mobile, side-by-side on desktop.
+- `class="text-sm md:text-base"` — smaller type on mobile, scaled up on desktop.
+
+**Breakpoints**: Use Tailwind's defaults (`sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px, `2xl` 1536px). The current primary breakpoint in this app is `md` — it's where the two-pane layout (list + map) takes effect. Do not introduce custom breakpoints unless a design genuinely requires one; if you must, register it in the Tailwind config rather than reaching for ad-hoc arbitrary values.
+
+**When you touch a file that violates this rule**, refactor it in a dedicated commit so the responsive flip is reviewable on its own, separate from any behavior change in the same PR.
+
 ## Internationalization (i18n)
 
 All user-facing text MUST go through `@nuxtjs/i18n`. Hardcoded strings in templates, scripts, alt text, aria labels, toast messages, page titles, and error messages are bugs. If a literal string can be read by a user, it must be a translation key.
