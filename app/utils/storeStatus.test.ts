@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import enLocale from '../../i18n/locales/en.json'
 import nlLocale from '../../i18n/locales/nl.json'
 
-import { buildStore, everyDay, hours, weekHours } from './storeStatus.mock'
+import { buildStore, everyDay, hours, openEveryDayStore, weekHours } from './storeStatus.mock'
 import { getStoreStatus } from './storeStatus'
 
 const tuesday = (hour: number, minute = 0, second = 0) => new Date(2025, 0, 7, hour, minute, second)
@@ -13,9 +13,7 @@ const monday = (hour: number, minute = 0, second = 0) => new Date(2025, 0, 13, h
 
 describe('getStoreStatus', () => {
     it('Should report open with the closing time when now is inside today\'s window', () => {
-        const store = buildStore(everyDay(hours('08:00', '22:00')))
-
-        const status = getStoreStatus(store, tuesday(14))
+        const status = getStoreStatus(openEveryDayStore, tuesday(14))
 
         expect(status.isOpen).toBe(true)
         expect(status.next).toEqual({
@@ -25,9 +23,7 @@ describe('getStoreStatus', () => {
     })
 
     it('Should report closed with today\'s opening time when now is before opens-at', () => {
-        const store = buildStore(everyDay(hours('08:00', '22:00')))
-
-        const status = getStoreStatus(store, tuesday(6))
+        const status = getStoreStatus(openEveryDayStore, tuesday(6))
 
         expect(status.isOpen).toBe(false)
         expect(status.next).toEqual({
@@ -37,9 +33,7 @@ describe('getStoreStatus', () => {
     })
 
     it('Should report closed with tomorrow\'s opening time when today\'s window has already ended', () => {
-        const store = buildStore(everyDay(hours('08:00', '22:00')))
-
-        const status = getStoreStatus(store, tuesday(23, 30))
+        const status = getStoreStatus(openEveryDayStore, tuesday(23, 30))
 
         expect(status.isOpen).toBe(false)
         expect(status.next).toEqual({
@@ -73,9 +67,7 @@ describe('getStoreStatus', () => {
     })
 
     it('Should treat the last second of the day as closed and point to tomorrow\'s opening', () => {
-        const store = buildStore(everyDay(hours('08:00', '22:00')))
-
-        const status = getStoreStatus(store, tuesday(23, 59, 59))
+        const status = getStoreStatus(openEveryDayStore, tuesday(23, 59, 59))
 
         expect(status.isOpen).toBe(false)
         expect(status.next).toEqual({
@@ -85,18 +77,14 @@ describe('getStoreStatus', () => {
     })
 
     it('Should consider the store open at the exact opening minute (inclusive boundary)', () => {
-        const store = buildStore(everyDay(hours('08:00', '22:00')))
-
-        const status = getStoreStatus(store, tuesday(8, 0, 0))
+        const status = getStoreStatus(openEveryDayStore, tuesday(8, 0, 0))
 
         expect(status.isOpen).toBe(true)
         expect(status.next?.key).toBe('status.closes-at')
     })
 
     it('Should consider the store closed at the exact closing minute (exclusive boundary)', () => {
-        const store = buildStore(everyDay(hours('08:00', '22:00')))
-
-        const status = getStoreStatus(store, tuesday(22, 0, 0))
+        const status = getStoreStatus(openEveryDayStore, tuesday(22, 0, 0))
 
         expect(status.isOpen).toBe(false)
         expect(status.next).toEqual({
@@ -118,5 +106,27 @@ describe('getStoreStatus', () => {
             expect(enLocale.status).toHaveProperty(suffix)
             expect(nlLocale.status).toHaveProperty(suffix)
         }
+    })
+
+    it('Should resolve UTC instants regardless of input Date construction (winter)', () => {
+        const status = getStoreStatus(openEveryDayStore, new Date('2025-01-07T19:00:00Z'))
+
+        expect(status.isOpen).toBe(true)
+        expect(status.next?.key).toBe('status.closes-at')
+        expect(status.next?.at.toISOString()).toBe('2025-01-07T21:00:00.000Z')
+    })
+
+    it('Should respect Amsterdam DST when computing the next event (summer)', () => {
+        const status = getStoreStatus(openEveryDayStore, new Date('2025-07-01T18:00:00Z'))
+
+        expect(status.isOpen).toBe(true)
+        expect(status.next?.key).toBe('status.closes-at')
+        expect(status.next?.at.toISOString()).toBe('2025-07-01T20:00:00.000Z')
+    })
+
+    it('Should throw a TypeError when openingHours contains a malformed time string', () => {
+        const store = buildStore(everyDay(hours('not-a-time', '22:00')))
+
+        expect(() => getStoreStatus(store, tuesday(14))).toThrow(TypeError)
     })
 })

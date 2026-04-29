@@ -18,14 +18,18 @@ const WEEKDAYS_BY_DAY_INDEX: readonly StoreOpeningDay[] = [
 
 function applyTime(base: Date, timeStr: string): Date {
     const [hour, minute] = timeStr.slice(0, 5).split(':').map(Number)
-    return set(base, { hours: hour ?? 0, minutes: minute ?? 0, seconds: 0, milliseconds: 0 })
+    if (!Number.isFinite(hour) || !Number.isFinite(minute)) {
+        throw new TypeError(`Invalid time string: ${timeStr}`)
+    }
+    return set(base, { hours: hour, minutes: minute, seconds: 0, milliseconds: 0 })
 }
 
-function lookupWindow(store: JumboStore, date: Date): StoreOpeningWindow | undefined {
-    return store.openingHours[WEEKDAYS_BY_DAY_INDEX[getDay(date)]!]
+function lookupWindow(store: Pick<JumboStore, 'openingHours'>, date: Date): StoreOpeningWindow | undefined {
+    const day = WEEKDAYS_BY_DAY_INDEX[getDay(date)]
+    return day ? store.openingHours[day] : undefined
 }
 
-export function getStoreStatus(store: JumboStore, now: Date): StoreStatus {
+export function getStoreStatus(store: Pick<JumboStore, 'openingHours'>, now: Date): StoreStatus {
     const wallclockNow = toZonedTime(now, STORE_TIMEZONE)
     const todayWindow = lookupWindow(store, wallclockNow)
 

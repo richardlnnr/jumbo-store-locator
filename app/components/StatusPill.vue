@@ -5,7 +5,7 @@ const { t } = useI18n()
 
 const color = computed(() => (props.isOpen ? 'success' : 'error'))
 const label = computed(() => (props.isOpen ? t('status.open') : t('status.closed')))
-const dotClass = computed(() => (props.isOpen ? 'bg-green-500' : 'bg-red-500'))
+const dotClass = computed(() => (props.isOpen ? 'bg-success-500' : 'bg-error-500'))
 </script>
 
 <template>

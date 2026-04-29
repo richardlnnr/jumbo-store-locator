@@ -63,8 +63,8 @@ const defaultCommerce = {
 } as const
 
 const defaultLocation = {
-    latitude: 52.0,
-    longitude: 5.0,
+    latitude: 52,
+    longitude: 5,
     address: {
         street: 'Test',
         houseNumber: '1',
@@ -92,3 +92,5 @@ export function buildStore(openingHours: StoreOpeningHours, overrides: Partial<J
         ...overrides,
     }
 }
+
+export const openEveryDayStore: JumboStore = buildStore(everyDay(hours('08:00', '22:00')))
