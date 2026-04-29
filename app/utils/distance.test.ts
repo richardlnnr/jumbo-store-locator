@@ -7,6 +7,7 @@ import {
     AMSTERDAM,
     NEARBY_AMSTERDAM_1_2KM,
     NEARBY_AMSTERDAM_500M,
+    NEARBY_AMSTERDAM_990M,
     ROTTERDAM,
     SYDNEY,
 } from './distance.mock'
@@ -45,6 +46,13 @@ describe('getDistanceLabel', () => {
 
         expect(labelBelow.key).toBe('distance.m')
         expect(labelAbove.key).toBe('distance.km')
+    })
+
+    it('Should render as "1.0 km" rather than "1000 m" when the rounded meter value reaches 1000', () => {
+        const label = getDistanceLabel(AMSTERDAM, NEARBY_AMSTERDAM_990M)
+
+        expect(label.key).toBe('distance.km')
+        expect(label.distance).toBe(1)
     })
 
     it('Should round km values to one decimal place', () => {

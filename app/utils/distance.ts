@@ -11,9 +11,9 @@ export const distanceKm = (a: Coordinate, b: Coordinate): number =>
 
 export const getDistanceLabel = (a: Coordinate, b: Coordinate): DistanceLabel => {
     const km = distanceKm(a, b)
+    const meters = Math.round((km * METERS_IN_KILOMETER) / METER_ROUNDING_STEP) * METER_ROUNDING_STEP
 
-    if (km < 1) {
-        const meters = Math.round((km * METERS_IN_KILOMETER) / METER_ROUNDING_STEP) * METER_ROUNDING_STEP
+    if (meters < METERS_IN_KILOMETER) {
         return { key: 'distance.m', distance: meters }
     }
 
