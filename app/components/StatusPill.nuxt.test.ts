@@ -1,30 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import { flushPromises } from '@vue/test-utils'
-import { defineComponent } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { setI18nLocale } from '~~/test-utils/i18n'
 import StatusPill from './StatusPill.vue'
-
-function localeSetter(code: 'en' | 'nl') {
-    return defineComponent({
-        async setup() {
-            const { setLocale } = useI18n()
-            await setLocale(code)
-            return () => null
-        },
-    })
-}
-
-async function settleSetLocale() {
-    await flushPromises()
-    await new Promise(resolve => setTimeout(resolve, 50))
-    await flushPromises()
-}
 
 describe('StatusPill', () => {
     beforeEach(async () => {
-        await mountSuspended(localeSetter('en'))
-        await settleSetLocale()
+        await setI18nLocale('en')
     })
 
     it('Should render the localized "Open" label when isOpen is true in English', async () => {
@@ -41,8 +22,7 @@ describe('StatusPill', () => {
     })
 
     it('Should render the Dutch open label when locale is nl', async () => {
-        await mountSuspended(localeSetter('nl'))
-        await settleSetLocale()
+        await setI18nLocale('nl')
 
         const wrapper = await mountSuspended(StatusPill, { props: { isOpen: true } })
 
@@ -50,8 +30,7 @@ describe('StatusPill', () => {
     })
 
     it('Should render the Dutch closed label when locale is nl', async () => {
-        await mountSuspended(localeSetter('nl'))
-        await settleSetLocale()
+        await setI18nLocale('nl')
 
         const wrapper = await mountSuspended(StatusPill, { props: { isOpen: false } })
 

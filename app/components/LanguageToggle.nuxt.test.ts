@@ -1,28 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import { flushPromises } from '@vue/test-utils'
-import { defineComponent } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { setI18nLocale } from '~~/test-utils/i18n'
 import LanguageToggle from './LanguageToggle.vue'
-
-const LocaleResetter = defineComponent({
-    async setup() {
-        const { setLocale } = useI18n()
-        await setLocale('en')
-        return () => null
-    },
-})
-
-async function settleSetLocale() {
-    await flushPromises()
-    await new Promise(resolve => setTimeout(resolve, 50))
-    await flushPromises()
-}
 
 describe('LanguageToggle', () => {
     beforeEach(async () => {
-        await mountSuspended(LocaleResetter)
-        await settleSetLocale()
+        await setI18nLocale('en')
     })
 
     it('Should render a button per configured locale labelled with its uppercase code', async () => {
@@ -49,7 +33,9 @@ describe('LanguageToggle', () => {
         const wrapper = await mountSuspended(LanguageToggle)
 
         await wrapper.get('button[aria-pressed="false"]').trigger('click')
-        await settleSetLocale()
+        await flushPromises()
+        await new Promise(resolve => setTimeout(resolve, 50))
+        await flushPromises()
 
         expect(wrapper.get('button[aria-pressed="true"]').text()).toBe('NL')
         expect(wrapper.get('button[aria-pressed="false"]').text()).toBe('EN')
