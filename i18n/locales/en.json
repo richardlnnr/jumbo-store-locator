@@ -25,5 +25,9 @@
     "opens-today-at": "Opens today at {time}",
     "opens-tomorrow-at": "Opens tomorrow at {time}",
     "opens-on": "Opens {weekday} at {time}"
+  },
+  "distance": {
+    "km": "{distance} km",
+    "m": "{distance} m"
   }
 }
