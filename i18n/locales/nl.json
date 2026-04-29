@@ -25,5 +25,9 @@
     "opens-today-at": "Vandaag open om {time}",
     "opens-tomorrow-at": "Morgen open om {time}",
     "opens-on": "Open op {weekday} om {time}"
+  },
+  "distance": {
+    "km": "{distance} km",
+    "m": "{distance} m"
   }
 }
