@@ -5,12 +5,12 @@ import type {
     StoreOpeningWindow,
 } from '../../shared/types/store'
 
-const TZ_OFFSET = '+01:00'
+const TIMEZONE_OFFSET = '+01:00'
 
 export function hours(opensAt: string, closesAt: string): StoreOpeningWindow {
     return {
-        opensAt: `${opensAt}${TZ_OFFSET}`,
-        closesAt: `${closesAt}${TZ_OFFSET}`,
+        opensAt: `${opensAt}${TIMEZONE_OFFSET}`,
+        closesAt: `${closesAt}${TIMEZONE_OFFSET}`,
     }
 }
 
