@@ -68,9 +68,12 @@ export interface StoreAddress {
     countryCode: string
 }
 
-export interface StoreLocation {
+export interface Coordinate {
     latitude: number
     longitude: number
+}
+
+export interface StoreLocation extends Coordinate {
     address: StoreAddress
 }
 

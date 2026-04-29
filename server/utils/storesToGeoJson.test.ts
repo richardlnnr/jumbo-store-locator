@@ -23,28 +23,11 @@ describe('storesToGeoJson', () => {
         ])
     })
 
-    it('Should copy storeId, name, complexNumber, websiteURL, facilities, commerce, address and openingHours into properties', () => {
+    it('Should expose the full JumboStore as the feature properties', () => {
         const result = storesToGeoJson([supermarketFixture])
 
         const feature = result.features[0]!
-        expect(feature.properties).toEqual({
-            storeId: supermarketFixture.storeId,
-            name: supermarketFixture.name,
-            complexNumber: supermarketFixture.complexNumber,
-            websiteURL: supermarketFixture.websiteURL,
-            facilities: supermarketFixture.facilities,
-            commerce: supermarketFixture.commerce,
-            address: supermarketFixture.location.address,
-            openingHours: supermarketFixture.openingHours,
-        })
-    })
-
-    it('Should not include latitude or longitude inside properties', () => {
-        const result = storesToGeoJson([supermarketFixture])
-
-        const feature = result.features[0]!
-        expect(feature.properties).not.toHaveProperty('latitude')
-        expect(feature.properties).not.toHaveProperty('longitude')
+        expect(feature.properties).toEqual(supermarketFixture)
     })
 
     it('Should return an empty FeatureCollection when given an empty array', () => {
