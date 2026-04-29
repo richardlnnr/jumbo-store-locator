@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@nuxt/ui": "^4.7.0",
+    "@turf/distance": "^7.3.5",
     "@vueuse/core": "^14.2.1",
     "@vueuse/nuxt": "^14.2.1",
     "date-fns": "^4.1.0",
