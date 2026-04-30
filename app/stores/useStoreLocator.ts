@@ -44,7 +44,8 @@ export const useStoreLocator = defineStore('storeLocator', () => {
 
     const cities = computed<string[]>(() => {
         const features = featureCollection.value?.features ?? []
-        return [...new Set(features.map(feature => feature.properties.location.address.city))].sort()
+        return [...new Set(features.map(feature => feature.properties.location.address.city))]
+            .sort((cityA, cityB) => cityA.localeCompare(cityB))
     })
 
     const filteredFeatureCollection = computed<JumboStoreFeatureCollection>(() => {
@@ -72,9 +73,9 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         try {
             featureCollection.value = await $fetch<JumboStoreFeatureCollection>('/api/stores')
         }
-        catch (caught) {
+        catch (error_) {
             if (import.meta.server) {
-                console.error('[useStoreLocator] fetchStores failed', caught)
+                console.error('[useStoreLocator] fetchStores failed', error_)
             }
             error.value = new Error('Unable to load stores')
         }
