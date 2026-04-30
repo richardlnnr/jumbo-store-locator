@@ -3,6 +3,10 @@ export default defineNuxtConfig({
     modules: ['@nuxt/ui', '@nuxt/image', '@nuxt/fonts', '@nuxtjs/i18n', '@nuxt/test-utils/module', '@nuxt/eslint', '@vueuse/nuxt', '@pinia/nuxt'],
     devtools: { enabled: true },
     css: ['~/assets/css/main.css', 'mapbox-gl/dist/mapbox-gl.css'],
+    colorMode: {
+        preference: 'light',
+        fallback: 'light',
+    },
     runtimeConfig: {
         public: {
             mapboxToken: '',

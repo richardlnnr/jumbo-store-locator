@@ -2,6 +2,42 @@
 @import "./tokens.css";
 @import "@nuxt/ui";
 
+/*
+ * Realign @nuxt/ui's elevated bg token to our brand palette.
+ * @nuxt/ui's --ui-color-neutral-* scale is derived from Tailwind defaults
+ * and is separate from our project --color-neutral-* tokens, so without
+ * this override the neutral-ghost button hover/active/focus state lands on
+ * a near-black tone that doesn't fit the Jumbo color scheme.
+ *
+ * Scoped to --ui-bg-elevated only — the scrollbar uses its own neutral
+ * colors and stays untouched.
+ */
+:root {
+    --ui-bg-elevated: var(--color-yellow-50);
+}
+
 body {
     font-family: 'JumboTheSans', system-ui, sans-serif;
+}
+
+.scrollbar-thin-neutral {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neutral-200) transparent;
+}
+
+.scrollbar-thin-neutral::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollbar-thin-neutral::-webkit-scrollbar-thumb {
+    background-color: var(--color-neutral-200);
+    border-radius: 999px;
+}
+
+.scrollbar-thin-neutral::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-neutral-300);
+}
+
+.scrollbar-thin-neutral::-webkit-scrollbar-track {
+    background: transparent;
 }
