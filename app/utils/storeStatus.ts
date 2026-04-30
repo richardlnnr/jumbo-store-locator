@@ -26,7 +26,10 @@ function applyTime(base: Date, timeStr: string): Date {
 
 function lookupWindow(store: Pick<JumboStore, 'openingHours'>, date: Date): StoreOpeningWindow | undefined {
     const day = WEEKDAYS_BY_DAY_INDEX[getDay(date)]
-    return day ? store.openingHours[day] : undefined
+    if (!day) return undefined
+    const window = store.openingHours[day]
+    if (!window?.opensAt || !window?.closesAt) return undefined
+    return window
 }
 
 export function getStoreStatus(store: Pick<JumboStore, 'openingHours'>, now: Date): StoreStatus {
