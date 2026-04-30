@@ -5,6 +5,7 @@ import type {
     StoreOpeningHours,
     StoreOpeningWindow,
 } from './store'
+import type { JumboStoreFeature, JumboStoreFeatureCollection } from './geojson'
 
 // --- Coordinate fixtures ---------------------------------------------------
 
@@ -175,3 +176,110 @@ export const virtualFixture: JumboStore = {
         address: { ...supermarketFixture.location.address, city: 'VEGHEL' },
     },
 }
+
+// --- GeoJSON feature fixtures ----------------------------------------------
+
+export const buildFeature = (store: JumboStore): JumboStoreFeature => ({
+    type: 'Feature',
+    geometry: {
+        type: 'Point',
+        coordinates: [store.location.longitude, store.location.latitude],
+    },
+    properties: store,
+})
+
+export const buildFeatureCollection = (stores: JumboStore[]): JumboStoreFeatureCollection => ({
+    type: 'FeatureCollection',
+    features: stores.map(buildFeature),
+})
+
+export const featureCollectionFixture: JumboStoreFeatureCollection = buildFeatureCollection([
+    supermarketFixture,
+    virtualFixture,
+])
+
+const openAllDay = everyDay(hours('08:00', '22:00'))
+
+export const eindhovenFeature: JumboStoreFeature = buildFeature(buildStore(openAllDay, {
+    storeId: 'eindhoven-1',
+    name: 'Jumbo Eindhoven Centrum',
+    location: {
+        latitude: 51.4416,
+        longitude: 5.4697,
+        address: {
+            street: 'Marktstraat',
+            houseNumber: '1',
+            postalCode: '5611AA',
+            city: 'EINDHOVEN',
+            state: 'Noord-Brabant',
+            countryCode: 'NL',
+        },
+    },
+}))
+
+export const amsterdamCentrumFeature: JumboStoreFeature = buildFeature(buildStore(openAllDay, {
+    storeId: 'amsterdam-1',
+    name: 'Jumbo Amsterdam Centrum',
+    location: {
+        ...AMSTERDAM,
+        address: {
+            street: 'Damrak',
+            houseNumber: '70',
+            postalCode: '1012LM',
+            city: 'AMSTERDAM',
+            state: 'Noord-Holland',
+            countryCode: 'NL',
+        },
+    },
+}))
+
+export const amsterdamSouthFeature: JumboStoreFeature = buildFeature(buildStore(openAllDay, {
+    storeId: 'amsterdam-2',
+    name: 'Jumbo Amsterdam Zuid',
+    location: {
+        ...NEARBY_AMSTERDAM_500M,
+        address: {
+            street: 'Beethovenstraat',
+            houseNumber: '12',
+            postalCode: '1077JH',
+            city: 'AMSTERDAM',
+            state: 'Noord-Holland',
+            countryCode: 'NL',
+        },
+    },
+}))
+
+export const amsterdamNorthFeature: JumboStoreFeature = buildFeature(buildStore(openAllDay, {
+    storeId: 'amsterdam-3',
+    name: 'Jumbo Amsterdam Noord',
+    location: {
+        ...NEARBY_AMSTERDAM_1_2KM,
+        address: {
+            street: 'Buikslotermeerplein',
+            houseNumber: '1',
+            postalCode: '1025XL',
+            city: 'AMSTERDAM',
+            state: 'Noord-Holland',
+            countryCode: 'NL',
+        },
+    },
+}))
+
+export const sundayOnlyFeature: JumboStoreFeature = buildFeature(buildStore(weekHours({
+    sunday: hours('10:00', '18:00'),
+}), {
+    storeId: 'sunday-only',
+    name: 'Jumbo Sunday Only',
+    location: {
+        latitude: 52.0,
+        longitude: 5.0,
+        address: {
+            street: 'Test',
+            houseNumber: '1',
+            postalCode: '0000AA',
+            city: 'UTRECHT',
+            state: 'Utrecht',
+            countryCode: 'NL',
+        },
+    },
+}))

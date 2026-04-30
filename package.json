@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@nuxt/ui": "^4.7.0",
+    "@pinia/nuxt": "^0.11.3",
     "@turf/distance": "^7.3.5",
     "@vueuse/core": "^14.2.1",
     "@vueuse/nuxt": "^14.2.1",
@@ -30,6 +31,7 @@
     "date-fns-tz": "^3.2.0",
     "mapbox-gl": "^3.22.0",
     "nuxt": "^4.4.2",
+    "pinia": "^3.0.4",
     "vue": "^3.5.32",
     "vue-router": "^5.0.4"
   },
