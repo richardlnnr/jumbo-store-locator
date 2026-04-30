@@ -51,4 +51,55 @@ describe('storesToGeoJson', () => {
 
         expect(result.features[0]!.properties.location.address.city).toBe('Aalsmeer')
     })
+
+    it('Should drop stores whose coordinates are placeholder zeros', () => {
+        const placeholder: JumboStore = {
+            ...supermarketFixture,
+            storeId: 'placeholder',
+            location: {
+                ...supermarketFixture.location,
+                latitude: 0,
+                longitude: 0,
+            },
+        }
+
+        const result = storesToGeoJson([supermarketFixture, placeholder])
+
+        expect(result.features).toHaveLength(1)
+        expect(result.features[0]!.properties.storeId).toBe(supermarketFixture.storeId)
+    })
+
+    it('Should drop stores whose latitude and longitude appear transposed', () => {
+        const transposed: JumboStore = {
+            ...supermarketFixture,
+            storeId: 'transposed',
+            location: {
+                ...supermarketFixture.location,
+                latitude: 4.762433,
+                longitude: 52.264417,
+            },
+        }
+
+        const result = storesToGeoJson([supermarketFixture, transposed])
+
+        expect(result.features).toHaveLength(1)
+        expect(result.features[0]!.properties.storeId).toBe(supermarketFixture.storeId)
+    })
+
+    it('Should drop stores whose coordinates fall outside the Netherlands bounding box', () => {
+        const overseas: JumboStore = {
+            ...supermarketFixture,
+            storeId: 'overseas',
+            location: {
+                ...supermarketFixture.location,
+                latitude: 35.0,
+                longitude: 4.5,
+            },
+        }
+
+        const result = storesToGeoJson([supermarketFixture, overseas])
+
+        expect(result.features).toHaveLength(1)
+        expect(result.features[0]!.properties.storeId).toBe(supermarketFixture.storeId)
+    })
 })

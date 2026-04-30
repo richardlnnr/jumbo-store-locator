@@ -1,32 +1,146 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import { shallowRef } from 'vue'
+import { nextTick, shallowRef } from 'vue'
+
+import { useStoreLocator } from '~~/app/stores/useStoreLocator'
+import {
+    amsterdamCentrumFeature,
+    amsterdamSouthFeature,
+    eindhovenFeature,
+} from '~~/shared/types/store.mock'
+import type { JumboStoreFeatureCollection } from '~~/shared/types/geojson'
 import StoreMap from './StoreMap.vue'
+
+type MountedWrapper = Awaited<ReturnType<typeof mountSuspended>>
+
+const setData = vi.fn()
+const addSource = vi.fn()
+const getSource = vi.fn(() => ({ setData }))
+const remove = vi.fn()
+
+const fakeMap = {
+    addSource,
+    getSource,
+    remove,
+    on: (event: string, handler: () => void) => {
+        if (event === 'load') handler()
+    },
+}
+
+const mapRef = shallowRef<typeof fakeMap | null>(null)
 
 const createMapMock = vi.hoisted(() => vi.fn())
 
 mockNuxtImport('useMapbox', () => () => ({
     createMap: createMapMock,
-    map: shallowRef(null),
+    map: mapRef,
 }))
+
+const sampleFeatureCollection: JumboStoreFeatureCollection = {
+    type: 'FeatureCollection',
+    features: [eindhovenFeature, amsterdamCentrumFeature, amsterdamSouthFeature],
+}
+
+const seedThreeFeatures = () => {
+    const locator = useStoreLocator()
+    locator.featureCollection = sampleFeatureCollection
+    return locator
+}
+
+let wrapper: MountedWrapper | null = null
+const mountStoreMap = async (
+    options?: Parameters<typeof mountSuspended>[1],
+): Promise<MountedWrapper> => {
+    wrapper = await mountSuspended(StoreMap, options)
+    return wrapper
+}
+
+beforeEach(() => {
+    const locator = useStoreLocator()
+    locator.featureCollection = null
+    locator.clearFilters()
+    locator.clearSelection()
+
+    setData.mockClear()
+    addSource.mockClear()
+    getSource.mockClear()
+    remove.mockClear()
+    mapRef.value = null
+    createMapMock.mockReset()
+    createMapMock.mockImplementation(async () => {
+        mapRef.value = fakeMap
+        return fakeMap
+    })
+})
+
+afterEach(() => {
+    wrapper?.unmount()
+    wrapper = null
+})
 
 describe('StoreMap', () => {
     it('Should expose a region landmark with the provided aria-label', async () => {
-        const wrapper = await mountSuspended(StoreMap, {
-            attrs: { 'aria-label': 'Store map' },
-        })
+        const mounted = await mountStoreMap({ attrs: { 'aria-label': 'Store map' } })
 
-        const section = wrapper.find('section')
+        const section = mounted.find('section')
         expect(section.exists()).toBe(true)
         expect(section.attributes('role')).toBe('region')
         expect(section.attributes('aria-label')).toBe('Store map')
     })
 
-    it('Should mount the MapBox child filling the pane', async () => {
-        const wrapper = await mountSuspended(StoreMap)
+    it('Should call createMap with bounds derived from the current filtered feature collection', async () => {
+        seedThreeFeatures()
 
-        expect(createMapMock).toHaveBeenCalled()
-        expect(wrapper.html()).toContain('h-full')
-        expect(wrapper.html()).toContain('w-full')
+        await mountStoreMap()
+
+        expect(createMapMock).toHaveBeenCalledTimes(1)
+        const options = createMapMock.mock.calls[0]![0]
+        expect(options.bounds).toBeDefined()
+        expect(options.center).toBeUndefined()
+        expect(options.zoom).toBeUndefined()
+        expect(options.style).toBe('mapbox://styles/mapbox/streets-v12')
+    })
+
+    it('Should add a "stores" GeoJSON source bound to filteredFeatureCollection on load', async () => {
+        seedThreeFeatures()
+
+        await mountStoreMap()
+
+        expect(addSource).toHaveBeenCalledTimes(1)
+        const [sourceId, options] = addSource.mock.calls[0]!
+        expect(sourceId).toBe('stores')
+        expect(options.type).toBe('geojson')
+        expect(options.data.features).toHaveLength(3)
+    })
+
+    it('Should call setData on the "stores" source when filters change', async () => {
+        const locator = seedThreeFeatures()
+
+        await mountStoreMap()
+
+        locator.setCityFilter(['EINDHOVEN'])
+        await nextTick()
+
+        expect(getSource).toHaveBeenCalledWith('stores')
+        expect(setData).toHaveBeenCalledTimes(1)
+        const nextData = setData.mock.calls[0]![0]
+        expect(nextData.features).toHaveLength(1)
+        expect(nextData.features[0].properties.storeId).toBe('eindhoven-1')
+    })
+
+    it('Should not recreate the source when filters change repeatedly', async () => {
+        const locator = seedThreeFeatures()
+
+        await mountStoreMap()
+
+        locator.setCityFilter(['EINDHOVEN'])
+        await nextTick()
+        locator.setCityFilter(['AMSTERDAM'])
+        await nextTick()
+        locator.setOpenOnly(true)
+        await nextTick()
+
+        expect(addSource).toHaveBeenCalledTimes(1)
+        expect(setData.mock.calls.length).toBeGreaterThanOrEqual(2)
     })
 })
