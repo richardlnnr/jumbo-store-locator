@@ -1,12 +1,42 @@
-import { describe, expect, it } from 'vitest'
-import { mountSuspended } from '@nuxt/test-utils/runtime'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useStoreLocator } from '~~/app/stores/useStoreLocator'
+import { setI18nLocale } from '~~/test-utils/i18n'
+import { mountWithUApp } from '~~/test-utils/mountWithUApp'
+import {
+    amsterdamCentrumFeature,
+    amsterdamSouthFeature,
+    eindhovenFeature,
+} from '~~/shared/types/store.mock'
 import StoreList from './StoreList.vue'
 
+const seedThreeFeatures = () => {
+    const locator = useStoreLocator()
+    locator.featureCollection = {
+        type: 'FeatureCollection',
+        features: [amsterdamCentrumFeature, amsterdamSouthFeature, eindhovenFeature],
+    }
+    return locator
+}
+
 describe('StoreList', () => {
+    beforeEach(async () => {
+        const locator = useStoreLocator()
+        locator.featureCollection = null
+        locator.clearFilters()
+        locator.clearSelection()
+
+        await setI18nLocale('en')
+        vi.useFakeTimers({ toFake: ['Date'] })
+        vi.setSystemTime(new Date('2026-04-29T10:00:00+02:00'))
+    })
+
+    afterEach(() => {
+        vi.useRealTimers()
+    })
+
     it('Should expose a region landmark with the provided aria-label', async () => {
-        const wrapper = await mountSuspended(StoreList, {
-            attrs: { 'aria-label': 'Store list' },
-        })
+        seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList, { 'aria-label': 'Store list' })
 
         const aside = wrapper.find('aside')
         expect(aside.exists()).toBe(true)
@@ -14,9 +44,91 @@ describe('StoreList', () => {
         expect(aside.attributes('aria-label')).toBe('Store list')
     })
 
-    it('Should render the i18n placeholder copy', async () => {
-        const wrapper = await mountSuspended(StoreList)
+    it('Should render the result count from filteredFeatureCollection', async () => {
+        seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList)
 
-        expect(wrapper.text()).toContain('Store list coming soon')
+        expect(wrapper.text()).toContain('3 stores in the Netherlands')
+    })
+
+    it('Should reflect filter changes in the result count', async () => {
+        const locator = seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList)
+
+        locator.setQuery('Eindhoven')
+        await vi.waitFor(() => {
+            expect(wrapper.text()).toContain('1 stores in the Netherlands')
+        })
+    })
+
+    it('Should write to the Pinia query when the user types in the search input', async () => {
+        const locator = seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList)
+
+        const input = wrapper.find('input[type="text"]')
+        await input.setValue('amsterdam')
+
+        expect(locator.query).toBe('amsterdam')
+    })
+
+    it('Should toggle openOnly in the Pinia store when the Open now chip is clicked', async () => {
+        const locator = seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList)
+
+        const openNowChip = wrapper.findAll('button').find((button: { text: () => string }) => button.text().includes('Open now'))
+        expect(openNowChip).toBeDefined()
+
+        await openNowChip!.trigger('click')
+        expect(locator.openOnly).toBe(true)
+
+        await openNowChip!.trigger('click')
+        expect(locator.openOnly).toBe(false)
+    })
+
+    it('Should show the city count badge when the Pinia cityFilter is populated', async () => {
+        const locator = seedThreeFeatures()
+        locator.setCityFilter(['Amsterdam', 'Eindhoven'])
+
+        const wrapper = await mountWithUApp(StoreList)
+
+        const badge = wrapper.find('[data-slot="city-count"]')
+        expect(badge.exists()).toBe(true)
+        expect(badge.text()).toBe('2')
+    })
+
+    it('Should call selectStore with the clicked feature storeId', async () => {
+        const locator = seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList)
+
+        const firstRowButton = wrapper.findAll('button').find((button: { text: () => string }) =>
+            button.text().includes(amsterdamCentrumFeature.properties.name),
+        )
+        expect(firstRowButton).toBeDefined()
+
+        await firstRowButton!.trigger('click')
+        expect(locator.selectedStoreId).toBe(amsterdamCentrumFeature.properties.storeId)
+    })
+
+    it('Should mark the row matching selectedStoreId as selected', async () => {
+        const locator = seedThreeFeatures()
+        locator.selectStore(amsterdamSouthFeature.properties.storeId)
+
+        const wrapper = await mountWithUApp(StoreList)
+
+        const selectedButton = wrapper.findAll('button').find((button: { text: () => string }) =>
+            button.text().includes(amsterdamSouthFeature.properties.name),
+        )
+        expect(selectedButton?.attributes('aria-pressed')).toBe('true')
+        expect(selectedButton?.classes().some((className: string) => className.includes('border-l-yellow-500'))).toBe(true)
+    })
+
+    it('Should render the empty state when filtered features is empty', async () => {
+        const locator = seedThreeFeatures()
+        locator.setQuery('completely-unmatchable-query-string')
+
+        const wrapper = await mountWithUApp(StoreList)
+        await vi.waitFor(() => {
+            expect(wrapper.text()).toContain('No stores match your filters')
+        })
     })
 })
