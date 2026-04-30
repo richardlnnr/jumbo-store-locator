@@ -1,8 +1,10 @@
 <script setup lang="ts">
+definePageMeta({ colorMode: 'light' })
+
 const { t } = useI18n()
 
-const storeLocator = useStoreLocator()
-await storeLocator.fetchStores()
+const store = useStoreLocator()
+await store.fetchStores()
 </script>
 
 <template>

@@ -36,7 +36,7 @@ async function select(code: string) {
                 base: [
                     'rounded-full text-xs font-bold tracking-wider transition-colors',
                     locale === item.code
-                        ? 'bg-neutral-900 px-4 py-2 text-yellow-500 hover:bg-neutral-900'
+                        ? 'bg-yellow-200 px-4 py-2 text-neutral-900 hover:bg-yellow-200'
                         : 'bg-transparent px-3 py-2 text-neutral-900 hover:bg-neutral-200',
                 ],
             }"

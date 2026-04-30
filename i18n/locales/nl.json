@@ -13,7 +13,17 @@
     }
   },
   "store-list": {
-    "placeholder": "Winkellijst komt binnenkort"
+    "title": "Vind een winkel",
+    "count": "{count} winkels in Nederland",
+    "search-placeholder": "Zoek op naam of stad",
+    "empty": "Geen winkels gevonden voor deze filters"
+  },
+  "filters": {
+    "open-now": "Nu open",
+    "cities": "Steden",
+    "search-city": "Zoek stad",
+    "cities-selected": "{count} geselecteerd",
+    "clear": "Wissen"
   },
   "store-map": {
     "placeholder": "Winkelkaart komt binnenkort"

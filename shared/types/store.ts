@@ -61,7 +61,7 @@ export interface StoreCommerce {
 
 export interface StoreAddress {
     street: string
-    houseNumber: string
+    houseNumber?: string
     postalCode: string
     city: string
     state: string

@@ -149,7 +149,7 @@ describe('useStoreLocator', () => {
 
         await store.fetchStores()
 
-        expect(store.cities).toEqual(['AMSTERDAM', 'EINDHOVEN', 'UTRECHT'])
+        expect(store.cities).toEqual(['Amsterdam', 'Eindhoven', 'Utrecht'])
     })
 
     it('Should reflect cityFilter changes in filteredFeatureCollection', async () => {

@@ -124,6 +124,33 @@ describe('getStoreStatus', () => {
         expect(status.next?.at.toISOString()).toBe('2025-07-01T20:00:00.000Z')
     })
 
+    it('Should treat an empty window for today as a closed day and roll forward', () => {
+        const store = buildStore({
+            ...weekHours({ wednesday: hours('08:00', '22:00') }),
+            tuesday: {} as never,
+        })
+
+        const status = getStoreStatus(store, tuesday(14))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next).toEqual({
+            key: 'status.opens-tomorrow-at',
+            at: wednesday(8),
+        })
+    })
+
+    it('Should treat a window missing opensAt or closesAt as a closed day', () => {
+        const store = buildStore({
+            ...weekHours({ wednesday: hours('08:00', '22:00') }),
+            tuesday: { closesAt: '00:01+01:00' } as never,
+        })
+
+        const status = getStoreStatus(store, tuesday(14))
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next?.key).toBe('status.opens-tomorrow-at')
+    })
+
     it('Should throw a TypeError when openingHours contains a malformed time string', () => {
         const store = buildStore(everyDay(hours('not-a-time', '22:00')))
 

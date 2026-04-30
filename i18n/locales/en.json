@@ -13,7 +13,17 @@
     }
   },
   "store-list": {
-    "placeholder": "Store list coming soon"
+    "title": "Find a store",
+    "count": "{count} stores in the Netherlands",
+    "search-placeholder": "Search by name or city",
+    "empty": "No stores match your filters"
+  },
+  "filters": {
+    "open-now": "Open now",
+    "cities": "Cities",
+    "search-city": "Search city",
+    "cities-selected": "{count} selected",
+    "clear": "Clear"
   },
   "store-map": {
     "placeholder": "Store map coming soon"
