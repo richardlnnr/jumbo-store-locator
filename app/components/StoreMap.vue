@@ -17,6 +17,7 @@ onMounted(async () => {
         style: STREETS_STYLE,
         bounds: computeStoresBounds(filteredFeatureCollection.value),
         fitBoundsOptions: { padding: 48, maxZoom: 12 },
+        minZoom: 6,
     })
     if (!instance) return
 
