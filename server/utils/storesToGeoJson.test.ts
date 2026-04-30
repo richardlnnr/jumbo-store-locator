@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { storesToGeoJson } from './storesToGeoJson'
+import type { JumboStore } from '../../shared/types/store'
 import { supermarketFixture, virtualFixture } from '../../shared/types/store.mock'
 
 describe('storesToGeoJson', () => {
@@ -35,5 +36,19 @@ describe('storesToGeoJson', () => {
 
         expect(result.type).toBe('FeatureCollection')
         expect(result.features).toEqual([])
+    })
+
+    it('Should title-case the upstream address.city so consumers receive a display-ready value', () => {
+        const rawAllCaps: JumboStore = {
+            ...supermarketFixture,
+            location: {
+                ...supermarketFixture.location,
+                address: { ...supermarketFixture.location.address, city: 'AALSMEER' },
+            },
+        }
+
+        const result = storesToGeoJson([rawAllCaps])
+
+        expect(result.features[0]!.properties.location.address.city).toBe('Aalsmeer')
     })
 })
