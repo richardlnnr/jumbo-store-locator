@@ -220,4 +220,38 @@ describe('StoreMap', () => {
         expect(addImage).toHaveBeenCalledTimes(1)
         expect(addLayer).toHaveBeenCalledTimes(1)
     })
+
+    it('Should skip loading and registering the image when the Jumbo pin is already on the map', async () => {
+        seedThreeFeatures()
+        hasImage.mockImplementation(() => true)
+
+        await mountStoreMap()
+        await nextTick()
+
+        expect(loadImage).not.toHaveBeenCalled()
+        expect(addImage).not.toHaveBeenCalled()
+        expect(addLayer).toHaveBeenCalledTimes(1)
+    })
+
+    it('Should log an error and skip the symbol layer when the Jumbo pin image fails to load', async () => {
+        seedThreeFeatures()
+        const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+        const failure = new Error('Network failure')
+        loadImage.mockImplementation((_url, callback) => {
+            callback(failure, null as never)
+        })
+
+        await mountStoreMap()
+        await nextTick()
+
+        expect(loadImage).toHaveBeenCalledTimes(1)
+        expect(addImage).not.toHaveBeenCalled()
+        expect(addLayer).not.toHaveBeenCalled()
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+            '[StoreMap] failed to load Jumbo pin image',
+            failure,
+        )
+
+        consoleErrorSpy.mockRestore()
+    })
 })

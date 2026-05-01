@@ -48,7 +48,13 @@ onMounted(async () => {
             data: filteredFeatureCollection.value,
         })
 
-        await loadPinImage(instance)
+        try {
+            await loadPinImage(instance)
+        }
+        catch (error_) {
+            console.error('[StoreMap] failed to load Jumbo pin image', error_)
+            return
+        }
 
         if (!instance.getLayer(PINS_LAYER_ID)) {
             instance.addLayer({
