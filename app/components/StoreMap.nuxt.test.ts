@@ -13,14 +13,30 @@ import StoreMap from './StoreMap.vue'
 
 type MountedWrapper = Awaited<ReturnType<typeof mountSuspended>>
 
+const PIN_IMAGE = { width: 1, height: 1, data: new Uint8Array(4) }
+
 const setData = vi.fn()
 const addSource = vi.fn()
 const getSource = vi.fn(() => ({ setData }))
+const addLayer = vi.fn()
+const getLayer = vi.fn(() => undefined)
+const addImage = vi.fn()
+const hasImage = vi.fn(() => false)
+const loadImage = vi.fn(
+    (_url: string, callback: (error: Error | null, image: typeof PIN_IMAGE) => void) => {
+        callback(null, PIN_IMAGE)
+    },
+)
 const remove = vi.fn()
 
 const fakeMap = {
     addSource,
     getSource,
+    addLayer,
+    getLayer,
+    addImage,
+    hasImage,
+    loadImage,
     remove,
     on: (event: string, handler: () => void) => {
         if (event === 'load') handler()
@@ -64,6 +80,16 @@ beforeEach(() => {
     setData.mockClear()
     addSource.mockClear()
     getSource.mockClear()
+    addLayer.mockClear()
+    getLayer.mockClear()
+    getLayer.mockImplementation(() => undefined)
+    addImage.mockClear()
+    hasImage.mockClear()
+    hasImage.mockImplementation(() => false)
+    loadImage.mockClear()
+    loadImage.mockImplementation((_url, callback) => {
+        callback(null, PIN_IMAGE)
+    })
     remove.mockClear()
     mapRef.value = null
     createMapMock.mockReset()
@@ -142,5 +168,56 @@ describe('StoreMap', () => {
 
         expect(addSource).toHaveBeenCalledTimes(1)
         expect(setData.mock.calls.length).toBeGreaterThanOrEqual(2)
+    })
+
+    it('Should load the Jumbo pin image and register it under the "jumbo-pin" id after the map loads', async () => {
+        seedThreeFeatures()
+
+        await mountStoreMap()
+
+        expect(loadImage).toHaveBeenCalledTimes(1)
+        expect(loadImage.mock.calls[0]![0]).toBe('/jumbo-pin.png')
+        expect(addImage).toHaveBeenCalledTimes(1)
+        const [imageId, image, options] = addImage.mock.calls[0]!
+        expect(imageId).toBe('jumbo-pin')
+        expect(image).toBe(PIN_IMAGE)
+        expect(options).toEqual({ pixelRatio: 2 })
+    })
+
+    it('Should add a symbol layer that filters out clusters and uses the Jumbo pin icon with zoom-interpolated size', async () => {
+        seedThreeFeatures()
+
+        await mountStoreMap()
+
+        expect(addLayer).toHaveBeenCalledTimes(1)
+        const [layer] = addLayer.mock.calls[0]!
+        expect(layer).toMatchObject({
+            id: 'stores-pins',
+            type: 'symbol',
+            source: 'stores',
+            filter: ['!', ['has', 'point_count']],
+            layout: {
+                'icon-image': 'jumbo-pin',
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.3, 14, 0.5],
+                'icon-allow-overlap': true,
+                'icon-ignore-placement': true,
+                'icon-anchor': 'bottom',
+            },
+        })
+    })
+
+    it('Should not re-register the image or the symbol layer when filters change', async () => {
+        const locator = seedThreeFeatures()
+
+        await mountStoreMap()
+
+        locator.setCityFilter(['EINDHOVEN'])
+        await nextTick()
+        locator.setOpenOnly(true)
+        await nextTick()
+
+        expect(loadImage).toHaveBeenCalledTimes(1)
+        expect(addImage).toHaveBeenCalledTimes(1)
+        expect(addLayer).toHaveBeenCalledTimes(1)
     })
 })
