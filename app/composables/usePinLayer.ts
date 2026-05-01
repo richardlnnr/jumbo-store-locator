@@ -26,35 +26,38 @@ const loadPinImage = (instance: MapboxMap) =>
         })
     })
 
+const addPinLayer = (instance: MapboxMap) => {
+    instance.addLayer({
+        id: PINS_LAYER_ID,
+        type: 'symbol',
+        source: STORES_SOURCE_ID,
+        filter: ['!', ['has', 'point_count']],
+        layout: {
+            'icon-image': PIN_IMAGE_ID,
+            'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.3, 14, 0.5],
+            'icon-allow-overlap': true,
+            'icon-ignore-placement': true,
+            'icon-anchor': 'bottom',
+        },
+    })
+}
+
+const setupPinLayer = (instance: MapboxMap) => {
+    instance.on('load', async () => {
+        try {
+            await loadPinImage(instance)
+        }
+        catch (error) {
+            console.error('[StoreMap] failed to load Jumbo pin image', error)
+            return
+        }
+        addPinLayer(instance)
+    })
+}
+
 export const usePinLayer = (map: ShallowRef<MapboxMap | null>) => {
-    const setup = (instance: MapboxMap) => {
-        instance.on('load', async () => {
-            try {
-                await loadPinImage(instance)
-            }
-            catch (error) {
-                console.error('[StoreMap] failed to load Jumbo pin image', error)
-                return
-            }
-
-            instance.addLayer({
-                id: PINS_LAYER_ID,
-                type: 'symbol',
-                source: STORES_SOURCE_ID,
-                filter: ['!', ['has', 'point_count']],
-                layout: {
-                    'icon-image': PIN_IMAGE_ID,
-                    'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.3, 14, 0.5],
-                    'icon-allow-overlap': true,
-                    'icon-ignore-placement': true,
-                    'icon-anchor': 'bottom',
-                },
-            })
-        })
-    }
-
     watch(map, (instance) => {
         if (!instance) return
-        setup(instance)
+        setupPinLayer(instance)
     }, { immediate: true })
 }
