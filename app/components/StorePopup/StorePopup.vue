@@ -20,9 +20,9 @@ onKeyStroke('Escape', () => emit('close'))
         trapped
         loop
     >
-        <article
+        <dialog
+            open
             data-component="store-popup"
-            role="dialog"
             aria-modal="true"
             :aria-label="props.store.name"
             class="flex w-[min(380px,calc(100vw-32px))] max-h-(--store-popup-max-h,calc(100dvh-120px)) flex-col overflow-clip rounded-2xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
@@ -41,6 +41,6 @@ onKeyStroke('Escape', () => emit('close'))
                 <StorePopupFacilitiesList :facilities="store.facilities" />
             </div>
             <StorePopupFooter :store-name="store.name" />
-        </article>
+        </dialog>
     </FocusScope>
 </template>
