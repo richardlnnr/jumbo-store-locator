@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import AppHeader from './AppHeader.vue'
-import LanguageToggle from './LanguageToggle.vue'
+import LanguageToggle from '../LanguageToggle/LanguageToggle.vue'
 
 describe('AppHeader', () => {
     it('Should render a header landmark with the wordmark and tagline', async () => {
