@@ -28,6 +28,10 @@
   "store-map": {
     "placeholder": "Store map coming soon"
   },
+  "map-loading": {
+    "headline": "Loading map",
+    "caption": "Finding stores near you"
+  },
   "store-popup": {
     "subtitle": "{type} · {distance}",
     "subtitle-no-distance": "{type}",
