@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import enLocale from '../../i18n/locales/en.json'
-import nlLocale from '../../i18n/locales/nl.json'
+import enLocale from '../../../i18n/locales/en.json'
+import nlLocale from '../../../i18n/locales/nl.json'
 
-import { buildStore, everyDay, hours, openEveryDayStore, weekHours } from '../../shared/types/store.mock'
+import { buildStore, everyDay, hours, openEveryDayStore, weekHours } from '../../../shared/types/store.mock'
 import { getStoreStatus } from './storeStatus'
 
 const tuesday = (hour: number, minute = 0, second = 0) => new Date(2025, 0, 7, hour, minute, second)

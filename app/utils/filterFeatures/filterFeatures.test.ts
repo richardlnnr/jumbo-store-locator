@@ -7,8 +7,8 @@ import {
     amsterdamSouthFeature,
     eindhovenFeature,
     sundayOnlyFeature,
-} from '../../shared/types/store.mock'
-import type { JumboStoreFeature } from '../../shared/types/geojson'
+} from '../../../shared/types/store.mock'
+import type { JumboStoreFeature } from '../../../shared/types/geojson'
 import { filterFeatures } from './filterFeatures'
 
 const tuesdayMidday = new Date(2025, 0, 7, 14, 0, 0)

@@ -1,7 +1,7 @@
 import bbox from '@turf/bbox'
 import type { LngLatBoundsLike } from 'mapbox-gl'
 
-import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
+import type { JumboStoreFeatureCollection } from '../../../shared/types/geojson'
 
 const NETHERLANDS_BOUNDS: LngLatBoundsLike = [
     [3.31, 50.75],

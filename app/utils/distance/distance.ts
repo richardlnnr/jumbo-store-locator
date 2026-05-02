@@ -1,7 +1,7 @@
 import distance from '@turf/distance'
 
-import type { DistanceLabel } from '../../shared/types/distance'
-import type { Coordinate } from '../../shared/types/store'
+import type { DistanceLabel } from '../../../shared/types/distance'
+import type { Coordinate } from '../../../shared/types/store'
 
 const METERS_IN_KILOMETER = 1000
 const METER_ROUNDING_STEP = 50

@@ -2,7 +2,7 @@ import type { Map as MapboxMap } from 'mapbox-gl'
 import type { ShallowRef } from 'vue'
 import { watch } from 'vue'
 
-import { STORES_SOURCE_ID } from './useStoreSource'
+import { STORES_SOURCE_ID } from '../useStoreSource/useStoreSource'
 
 const PIN_IMAGE_ID = 'jumbo-pin'
 const PIN_IMAGE_URL = '/jumbo-pin.png'

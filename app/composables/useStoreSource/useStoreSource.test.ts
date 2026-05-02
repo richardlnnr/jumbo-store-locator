@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { effectScope, nextTick, shallowRef } from 'vue'
 
-import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
+import type { JumboStoreFeatureCollection } from '../../../shared/types/geojson'
 import {
     amsterdamCentrumFeature,
     amsterdamSouthFeature,
     eindhovenFeature,
-} from '../../shared/types/store.mock'
-import { createFakeMap } from '../../test-utils/createFakeMap'
+} from '../../../shared/types/store.mock'
+import { createFakeMap } from '../../../test-utils/createFakeMap'
 import { STORES_SOURCE_ID, useStoreSource } from './useStoreSource'
 
 const sampleFeatureCollection: JumboStoreFeatureCollection = {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import enLocale from '../../i18n/locales/en.json'
-import nlLocale from '../../i18n/locales/nl.json'
+import enLocale from '../../../i18n/locales/en.json'
+import nlLocale from '../../../i18n/locales/nl.json'
 
 import {
     AMSTERDAM,
@@ -10,7 +10,7 @@ import {
     NEARBY_AMSTERDAM_990M,
     ROTTERDAM,
     SYDNEY,
-} from '../../shared/types/store.mock'
+} from '../../../shared/types/store.mock'
 import { getDistanceLabel } from './distance'
 
 const TOLERANCE = 0.005

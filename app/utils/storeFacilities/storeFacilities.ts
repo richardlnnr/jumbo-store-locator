@@ -1,4 +1,4 @@
-import type { StoreFacilities } from '../../shared/types/store'
+import type { StoreFacilities } from '../../../shared/types/store'
 
 const SKIP_PROPS: ReadonlySet<keyof StoreFacilities> = new Set(['locationType'])
 const SKIP_VALUES: ReadonlySet<string> = new Set(['NO_INFO', 'NONE'])

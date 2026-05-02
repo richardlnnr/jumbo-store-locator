@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import {
     amsterdamCentrumFeature,
     eindhovenFeature,
-} from '../../shared/types/store.mock'
-import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
+} from '../../../shared/types/store.mock'
+import type { JumboStoreFeatureCollection } from '../../../shared/types/geojson'
 import { computeStoresBounds } from './computeStoresBounds'
 
 const emptyCollection: JumboStoreFeatureCollection = {

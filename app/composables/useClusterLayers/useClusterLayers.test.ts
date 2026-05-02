@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { effectScope, nextTick, shallowRef } from 'vue'
 
-import { createFakeMap } from '../../test-utils/createFakeMap'
+import { createFakeMap } from '../../../test-utils/createFakeMap'
 import { useClusterLayers } from './useClusterLayers'
 
 type FakeMap = ReturnType<typeof createFakeMap>['fakeMap']
