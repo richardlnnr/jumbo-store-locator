@@ -8,6 +8,12 @@ const PIN_IMAGE_ID = 'jumbo-pin'
 const PIN_IMAGE_URL = '/jumbo-pin.png'
 const PINS_LAYER_ID = 'stores-pins'
 
+type PinClickEvent = {
+    features?: Array<{
+        properties?: Record<string, unknown> | null
+    }>
+}
+
 const loadPinImage = (instance: MapboxMap) =>
     new Promise<void>((resolve, reject) => {
         if (instance.hasImage(PIN_IMAGE_ID)) {
@@ -42,7 +48,31 @@ const addPinLayer = (instance: MapboxMap) => {
     })
 }
 
-const setupPinLayer = (instance: MapboxMap) => {
+const registerPinHandlers = (
+    instance: MapboxMap,
+    onPinClick?: (storeId: string) => void,
+) => {
+    instance.on('mouseenter', PINS_LAYER_ID, () => {
+        instance.getCanvas().style.cursor = 'pointer'
+    })
+
+    instance.on('mouseleave', PINS_LAYER_ID, () => {
+        instance.getCanvas().style.cursor = ''
+    })
+
+    if (!onPinClick) return
+
+    instance.on('click', PINS_LAYER_ID, (event: PinClickEvent) => {
+        const storeId = event.features?.[0]?.properties?.storeId
+        if (typeof storeId !== 'string') return
+        onPinClick(storeId)
+    })
+}
+
+const setupPinLayer = (
+    instance: MapboxMap,
+    onPinClick?: (storeId: string) => void,
+) => {
     instance.on('load', async () => {
         try {
             await loadPinImage(instance)
@@ -52,12 +82,16 @@ const setupPinLayer = (instance: MapboxMap) => {
             return
         }
         addPinLayer(instance)
+        registerPinHandlers(instance, onPinClick)
     })
 }
 
-export const usePinLayer = (map: ShallowRef<MapboxMap | null>) => {
+export const usePinLayer = (
+    map: ShallowRef<MapboxMap | null>,
+    onPinClick?: (storeId: string) => void,
+) => {
     watch(map, (instance) => {
         if (!instance) return
-        setupPinLayer(instance)
+        setupPinLayer(instance, onPinClick)
     }, { immediate: true })
 }

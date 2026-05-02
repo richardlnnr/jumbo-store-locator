@@ -4,11 +4,14 @@ export const PIN_IMAGE = { width: 1, height: 1, data: new Uint8Array(4) }
 
 export type LayerHandler = (event: { features?: Array<Record<string, unknown>> }) => void
 export type LoadHandler = () => void
+export type ResizeListener = () => void
 
-export const createFakeMap = () => {
+export const createFakeMap = (initialClientHeight = 900) => {
     const layerHandlers = new Map<string, LayerHandler>()
     const loadHandlers: LoadHandler[] = []
+    const resizeListeners = new Set<ResizeListener>()
     const canvasStyle: { cursor: string } = { cursor: '' }
+    const canvas = { style: canvasStyle, clientHeight: initialClientHeight }
 
     const setData = vi.fn()
     const easeTo = vi.fn()
@@ -45,16 +48,19 @@ export const createFakeMap = () => {
         loadImage,
         easeTo,
         remove,
-        getCanvas: () => ({ style: canvasStyle }),
+        getCanvas: () => canvas,
         on: (
             event: string,
-            layerOrHandler: string | LoadHandler,
+            layerOrHandler: string | LoadHandler | ResizeListener,
             maybeHandler?: LayerHandler,
         ) => {
             if (typeof layerOrHandler === 'function') {
                 if (event === 'load') {
-                    loadHandlers.push(layerOrHandler)
-                    layerOrHandler()
+                    loadHandlers.push(layerOrHandler as LoadHandler)
+                    ;(layerOrHandler as LoadHandler)()
+                }
+                else if (event === 'resize') {
+                    resizeListeners.add(layerOrHandler as ResizeListener)
                 }
                 return
             }
@@ -62,6 +68,14 @@ export const createFakeMap = () => {
                 layerHandlers.set(`${event}:${layerOrHandler}`, maybeHandler)
             }
         },
+        off: (event: string, handler: ResizeListener) => {
+            if (event === 'resize') resizeListeners.delete(handler)
+        },
+    }
+
+    const triggerResize = (nextHeight: number) => {
+        canvas.clientHeight = nextHeight
+        for (const listener of resizeListeners) listener()
     }
 
     return {
@@ -82,5 +96,8 @@ export const createFakeMap = () => {
         layerHandlers,
         loadHandlers,
         canvasStyle,
+        canvas,
+        resizeListeners,
+        triggerResize,
     }
 }

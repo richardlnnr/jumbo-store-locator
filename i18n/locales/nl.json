@@ -13,7 +13,7 @@
     }
   },
   "store-list": {
-    "title": "Vind een winkel",
+    "title": "Zoek een winkel",
     "count": "{count} winkels in Nederland",
     "search-placeholder": "Zoek op naam of stad",
     "empty": "Geen winkels gevonden voor deze filters"
@@ -27,6 +27,47 @@
   },
   "store-map": {
     "placeholder": "Winkelkaart komt binnenkort"
+  },
+  "store-popup": {
+    "subtitle": "{type} · {distance}",
+    "subtitle-no-distance": "{type}",
+    "brand-alt": "Jumbo",
+    "close": "Popup sluiten",
+    "opening-hours": "Openingstijden",
+    "today": "Vandaag · {weekday}",
+    "closed-day": "Gesloten",
+    "facilities": "Voorzieningen",
+    "open-in-google-maps": "Open in Google Maps",
+    "location-type": {
+      "supermarket": "Supermarkt",
+      "hub": "Hub",
+      "pick-up-point": "Afhaalpunt",
+      "spk": "Servicepunt",
+      "virtual": "Onlinewinkel",
+      "supermarket-pick-up-point": "Supermarkt + afhaalpunt"
+    }
+  },
+  "facilities": {
+    "selfScan": "Zelfscan",
+    "selfCheckout": "Zelfscankassa",
+    "parking": {
+      "free": "Gratis parkeren",
+      "paid": "Betaald parkeren",
+      "zone": "Zone parkeren"
+    },
+    "pharmacy": "Apotheek",
+    "flowers": "Bloemen",
+    "kitchen": "Keuken",
+    "cookingStudio": "Kookstudio",
+    "dryCleaning": "Stomerij",
+    "liquorService": "Slijterij",
+    "photoService": "Fotoservice",
+    "postOffice": "Postkantoor",
+    "pickUpType": {
+      "inside": "Afhalen binnen",
+      "outside": "Afhalen buiten"
+    },
+    "wifi": "Wi-Fi"
   },
   "status": {
     "open": "Open",

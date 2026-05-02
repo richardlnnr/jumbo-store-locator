@@ -41,3 +41,27 @@ body {
 .scrollbar-thin-neutral::-webkit-scrollbar-track {
     background: transparent;
 }
+
+/*
+ * Strip Mapbox's default popup chrome so our <StorePopup> card controls
+ * the entire surface. Mapbox renders white padding, a solid background,
+ * and a default close button on .mapboxgl-popup-content; without these
+ * resets the rounded card sits inside another rounded card with a seam.
+ *
+ * The colored tip below the card is kept (anchor: bottom) and tinted to
+ * match the card body so it reads as a continuous pointer to the pin.
+ */
+.mapboxgl-popup.store-popup .mapboxgl-popup-content {
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.mapboxgl-popup.store-popup.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+    border-top-color: var(--color-white, #ffffff);
+}
+
+.mapboxgl-popup.store-popup.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+    border-bottom-color: var(--color-white, #ffffff);
+}

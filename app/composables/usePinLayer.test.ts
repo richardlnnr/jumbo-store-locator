@@ -14,6 +14,7 @@ const flushAsync = async () => {
 
 const mountPinLayer = async (
     setupHarness?: (harness: ReturnType<typeof createFakeMap>) => void,
+    onPinClick?: (storeId: string) => void,
 ) => {
     const harness = createFakeMap()
     setupHarness?.(harness)
@@ -21,7 +22,7 @@ const mountPinLayer = async (
     const mapRef = shallowRef<FakeMap | null>(null)
     const scope = effectScope()
     scope.run(() => {
-        usePinLayer(mapRef as never)
+        usePinLayer(mapRef as never, onPinClick)
     })
 
     mapRef.value = harness.fakeMap
@@ -108,5 +109,55 @@ describe('usePinLayer', () => {
         )
 
         consoleErrorSpy.mockRestore()
+    })
+
+    it('Should switch the canvas cursor to a pointer on mouseenter and reset it on mouseleave for the pin layer', async () => {
+        const { layerHandlers, canvasStyle, scope } = await mountPinLayer()
+        activeScope = scope
+
+        const enterHandler = layerHandlers.get('mouseenter:stores-pins')
+        const leaveHandler = layerHandlers.get('mouseleave:stores-pins')
+        expect(enterHandler).toBeDefined()
+        expect(leaveHandler).toBeDefined()
+
+        enterHandler!({})
+        expect(canvasStyle.cursor).toBe('pointer')
+
+        leaveHandler!({})
+        expect(canvasStyle.cursor).toBe('')
+    })
+
+    it('Should invoke the onPinClick callback with the clicked feature storeId', async () => {
+        const onPinClick = vi.fn()
+        const { layerHandlers, scope } = await mountPinLayer(undefined, onPinClick)
+        activeScope = scope
+
+        const clickHandler = layerHandlers.get('click:stores-pins')
+        expect(clickHandler).toBeDefined()
+
+        clickHandler!({
+            features: [{ properties: { storeId: '3126' } }],
+        })
+
+        expect(onPinClick).toHaveBeenCalledWith('3126')
+    })
+
+    it('Should ignore pin click events that have no features', async () => {
+        const onPinClick = vi.fn()
+        const { layerHandlers, scope } = await mountPinLayer(undefined, onPinClick)
+        activeScope = scope
+
+        const clickHandler = layerHandlers.get('click:stores-pins')
+        clickHandler!({})
+        clickHandler!({ features: [] })
+
+        expect(onPinClick).not.toHaveBeenCalled()
+    })
+
+    it('Should not register a click handler when no onPinClick callback is provided', async () => {
+        const { layerHandlers, scope } = await mountPinLayer()
+        activeScope = scope
+
+        expect(layerHandlers.has('click:stores-pins')).toBe(false)
     })
 })
