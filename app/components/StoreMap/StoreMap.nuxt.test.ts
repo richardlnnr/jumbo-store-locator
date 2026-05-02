@@ -109,17 +109,17 @@ describe('StoreMap', () => {
 
         const mounted = await mountStoreMap()
 
-        expect(mounted.find('[role="status"][aria-busy="true"]').exists()).toBe(true)
+        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(true)
     })
 
     it('Should hide the loading overlay once isMapLoaded flips to true', async () => {
         const mounted = await mountStoreMap()
-        expect(mounted.find('[role="status"][aria-busy="true"]').exists()).toBe(true)
+        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(true)
 
         isMapLoadedRef.value = true
         await nextTick()
         await nextTick()
 
-        expect(mounted.find('[role="status"][aria-busy="true"]').exists()).toBe(false)
+        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(false)
     })
 })

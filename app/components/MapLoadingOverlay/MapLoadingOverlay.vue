@@ -1,9 +1,7 @@
 <template>
-    <div
-        role="status"
-        aria-live="polite"
+    <output
         aria-busy="true"
-        class="absolute inset-0 overflow-hidden bg-yellow-50"
+        class="absolute inset-0 block overflow-hidden bg-yellow-50"
     >
         <div
             aria-hidden="true"
@@ -84,5 +82,5 @@
                 </p>
             </div>
         </div>
-    </div>
+    </output>
 </template>

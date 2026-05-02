@@ -10,12 +10,11 @@ describe('MapLoadingOverlay', () => {
         expect(wrapper.text()).toContain('Finding stores near you')
     })
 
-    it('Should mark itself as a polite status region', async () => {
+    it('Should expose the loading state through a native output element', async () => {
         const wrapper = await mountSuspended(MapLoadingOverlay)
 
-        const root = wrapper.find('[role="status"]')
+        const root = wrapper.find('output')
         expect(root.exists()).toBe(true)
-        expect(root.attributes('aria-live')).toBe('polite')
         expect(root.attributes('aria-busy')).toBe('true')
     })
 
