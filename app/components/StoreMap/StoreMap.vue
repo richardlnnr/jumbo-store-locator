@@ -2,7 +2,7 @@
 const STREETS_STYLE = 'mapbox://styles/mapbox/streets-v12'
 
 const mapEl = useTemplateRef<HTMLDivElement>('mapEl')
-const { createMap, map } = useMapbox()
+const { createMap, map, isMapLoaded } = useMapbox()
 const locator = useStoreLocator()
 const { filteredFeatureCollection, selectedStore, userLocation } = storeToRefs(locator)
 
@@ -33,6 +33,9 @@ onMounted(async () => {
             ref="mapEl"
             class="h-full w-full"
         />
+        <Transition name="map-loading-fade">
+            <MapLoadingOverlay v-if="!isMapLoaded" />
+        </Transition>
         <Teleport
             v-if="selectedStore && popupContainer"
             :to="popupContainer"
@@ -45,3 +48,14 @@ onMounted(async () => {
         </Teleport>
     </section>
 </template>
+
+<style scoped>
+.map-loading-fade-leave-active {
+    transition: opacity 200ms ease-out, transform 200ms ease-out;
+}
+
+.map-loading-fade-leave-to {
+    opacity: 0;
+    transform: translateY(4px);
+}
+</style>
