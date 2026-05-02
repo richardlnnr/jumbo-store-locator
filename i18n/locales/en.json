@@ -28,6 +28,47 @@
   "store-map": {
     "placeholder": "Store map coming soon"
   },
+  "store-popup": {
+    "subtitle": "{type} · {distance}",
+    "subtitle-no-distance": "{type}",
+    "brand-alt": "Jumbo",
+    "close": "Close popup",
+    "opening-hours": "Opening hours",
+    "today": "Today · {weekday}",
+    "closed-day": "Closed",
+    "facilities": "Facilities",
+    "open-in-google-maps": "Open in Google Maps",
+    "location-type": {
+      "supermarket": "Supermarket",
+      "hub": "Hub",
+      "pick-up-point": "Pickup point",
+      "spk": "Service point",
+      "virtual": "Online store",
+      "supermarket-pick-up-point": "Supermarket + pickup"
+    }
+  },
+  "facilities": {
+    "selfScan": "Self-scan",
+    "selfCheckout": "Self-checkout",
+    "parking": {
+      "free": "Free parking",
+      "paid": "Paid parking",
+      "zone": "Zone parking"
+    },
+    "pharmacy": "Pharmacy",
+    "flowers": "Flowers",
+    "kitchen": "Kitchen",
+    "cookingStudio": "Cooking studio",
+    "dryCleaning": "Dry cleaning",
+    "liquorService": "Liquor service",
+    "photoService": "Photo service",
+    "postOffice": "Post office",
+    "pickUpType": {
+      "inside": "Indoor pickup",
+      "outside": "Outdoor pickup"
+    },
+    "wifi": "Wi-Fi"
+  },
   "status": {
     "open": "Open",
     "closed": "Closed",
