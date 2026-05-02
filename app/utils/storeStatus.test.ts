@@ -156,4 +156,28 @@ describe('getStoreStatus', () => {
 
         expect(() => getStoreStatus(store, tuesday(14))).toThrow(TypeError)
     })
+
+    it('Should label the next opening as opens-tomorrow-at when the store rolls into a new day in Amsterdam but is still on the previous day in the user timezone', () => {
+        // Saturday 04:00 Amsterdam (UTC 02:00) is still Friday 23:00 in Sao Paulo.
+        // The store opens Saturday 08:00 Amsterdam = Saturday 03:00 Sao Paulo.
+        // From the user's calendar perspective, that is "tomorrow", not "today".
+        const now = new Date('2025-01-11T02:00:00Z')
+
+        const status = getStoreStatus(openEveryDayStore, now, 'America/Sao_Paulo')
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next?.key).toBe('status.opens-tomorrow-at')
+        expect(status.next?.at.toISOString()).toBe('2025-01-11T07:00:00.000Z')
+    })
+
+    it('Should label the next opening as opens-today-at when both the user timezone and Amsterdam are still on the same day before opens-at', () => {
+        // Saturday 06:00 Amsterdam (UTC 05:00) is Saturday 02:00 Sao Paulo —
+        // still the same calendar day in both timezones, so it stays "today".
+        const now = new Date('2025-01-11T05:00:00Z')
+
+        const status = getStoreStatus(openEveryDayStore, now, 'America/Sao_Paulo')
+
+        expect(status.isOpen).toBe(false)
+        expect(status.next?.key).toBe('status.opens-today-at')
+    })
 })

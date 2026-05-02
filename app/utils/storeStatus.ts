@@ -1,4 +1,4 @@
-import { addDays, getDay, isBefore, set } from 'date-fns'
+import { addDays, differenceInCalendarDays, getDay, isBefore, set } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 
 import type { JumboStore, StoreOpeningDay, StoreOpeningWindow } from '../../shared/types/store'
@@ -32,7 +32,30 @@ function lookupWindow(store: Pick<JumboStore, 'openingHours'>, date: Date): Stor
     return window
 }
 
-export function getStoreStatus(store: Pick<JumboStore, 'openingHours'>, now: Date): StoreStatus {
+const resolveUserTimezone = (override?: string): string =>
+    override ?? Intl.DateTimeFormat().resolvedOptions().timeZone
+
+// "Today" / "tomorrow" / "on Monday" are user-facing labels and must reflect
+// the user's calendar, not the store's. A user in Brazil at Friday 23:00
+// (Amsterdam Saturday 04:00) should see "Opens tomorrow", because Saturday is
+// tomorrow in their day, even though it is already today in Amsterdam. The
+// "isOpen" check above continues to use Amsterdam wallclock because being open
+// is a property of the store, not of the user.
+const labelKeyForOpensAt = (now: Date, opensAt: Date, userTimezone: string): StoreStatusKey => {
+    const localNow = toZonedTime(now, userTimezone)
+    const localOpens = toZonedTime(opensAt, userTimezone)
+    const dayDiff = differenceInCalendarDays(localOpens, localNow)
+    if (dayDiff <= 0) return 'status.opens-today-at'
+    if (dayDiff === 1) return 'status.opens-tomorrow-at'
+    return 'status.opens-on'
+}
+
+export function getStoreStatus(
+    store: Pick<JumboStore, 'openingHours'>,
+    now: Date,
+    userTimezone?: string,
+): StoreStatus {
+    const tz = resolveUserTimezone(userTimezone)
     const wallclockNow = toZonedTime(now, STORE_TIMEZONE)
     const todayWindow = lookupWindow(store, wallclockNow)
 
@@ -47,9 +70,10 @@ export function getStoreStatus(store: Pick<JumboStore, 'openingHours'>, now: Dat
             }
         }
         if (isBefore(wallclockNow, wallclockOpensAt)) {
+            const opensAt = fromZonedTime(wallclockOpensAt, STORE_TIMEZONE)
             return {
                 isOpen: false,
-                next: { key: 'status.opens-today-at', at: fromZonedTime(wallclockOpensAt, STORE_TIMEZONE) },
+                next: { key: labelKeyForOpensAt(now, opensAt, tz), at: opensAt },
             }
         }
     }
@@ -58,11 +82,11 @@ export function getStoreStatus(store: Pick<JumboStore, 'openingHours'>, now: Dat
         const wallclockDay = addDays(wallclockNow, dayOffset)
         const upcomingWindow = lookupWindow(store, wallclockDay)
         if (upcomingWindow) {
-            const key: StoreStatusKey = dayOffset === 1 ? 'status.opens-tomorrow-at' : 'status.opens-on'
             const wallclockOpensAt = applyTime(wallclockDay, upcomingWindow.opensAt)
+            const opensAt = fromZonedTime(wallclockOpensAt, STORE_TIMEZONE)
             return {
                 isOpen: false,
-                next: { key, at: fromZonedTime(wallclockOpensAt, STORE_TIMEZONE) },
+                next: { key: labelKeyForOpensAt(now, opensAt, tz), at: opensAt },
             }
         }
     }
