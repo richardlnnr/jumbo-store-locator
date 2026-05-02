@@ -2,12 +2,12 @@ import type { Map as MapboxMap, Popup } from 'mapbox-gl'
 import type { Ref, ShallowRef } from 'vue'
 import { onScopeDispose, ref, watch } from 'vue'
 
-import type { JumboStore } from '../../shared/types/store'
+import type { JumboStore } from '../../../shared/types/store'
 import {
     createStorePopup,
     easeMapToPin,
     setPopupMaxHeightVar,
-} from '../utils/storePopupSizing'
+} from '../../utils/storePopupSizing/storePopupSizing'
 
 interface UseStorePopupOptions {
     map: ShallowRef<MapboxMap | null>

@@ -4,7 +4,7 @@ import { computed, ref, shallowRef } from 'vue'
 
 import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
 import type { Coordinate, JumboStore } from '../../shared/types/store'
-import { filterFeatures } from '../utils/filterFeatures'
+import { filterFeatures } from '../utils/filterFeatures/filterFeatures'
 
 const QUERY_DEBOUNCE_MS = 200
 

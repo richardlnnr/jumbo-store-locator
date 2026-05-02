@@ -1,8 +1,8 @@
 import { addDays, differenceInCalendarDays, getDay, isBefore, set } from 'date-fns'
 import { fromZonedTime, toZonedTime } from 'date-fns-tz'
 
-import type { JumboStore, StoreOpeningDay, StoreOpeningWindow } from '../../shared/types/store'
-import type { StoreStatus, StoreStatusKey } from '../../shared/types/storeStatus'
+import type { JumboStore, StoreOpeningDay, StoreOpeningWindow } from '../../../shared/types/store'
+import type { StoreStatus, StoreStatusKey } from '../../../shared/types/storeStatus'
 
 const STORE_TIMEZONE = 'Europe/Amsterdam'
 

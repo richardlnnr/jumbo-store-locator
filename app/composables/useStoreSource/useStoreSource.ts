@@ -2,7 +2,7 @@ import type { GeoJSONSource, Map as MapboxMap } from 'mapbox-gl'
 import type { Ref, ShallowRef } from 'vue'
 import { watch } from 'vue'
 
-import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
+import type { JumboStoreFeatureCollection } from '../../../shared/types/geojson'
 
 export const STORES_SOURCE_ID = 'stores'
 

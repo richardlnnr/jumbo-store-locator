@@ -3,7 +3,7 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon'
 
 import type { JumboStore, StoreLocation } from '../../shared/types/store'
 import type { JumboStoreFeature, JumboStoreFeatureCollection } from '../../shared/types/geojson'
-import { formatCityName } from '../../shared/utils/cityName'
+import { formatCityName } from '../../shared/utils/cityName/cityName'
 
 const NETHERLANDS_AREA = bboxPolygon([3, 50, 8, 54])
 

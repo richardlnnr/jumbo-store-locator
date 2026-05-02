@@ -2,7 +2,7 @@ import type { GeoJSONSource, Map as MapboxMap } from 'mapbox-gl'
 import type { ShallowRef } from 'vue'
 import { watch } from 'vue'
 
-import { STORES_SOURCE_ID } from './useStoreSource'
+import { STORES_SOURCE_ID } from '../useStoreSource/useStoreSource'
 
 const CLUSTERS_HALO_LAYER_ID = 'clusters-halo'
 const CLUSTERS_LAYER_ID = 'clusters'

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { effectScope, nextTick, shallowRef } from 'vue'
 
-import { createFakeMap, PIN_IMAGE } from '../../test-utils/createFakeMap'
+import { createFakeMap, PIN_IMAGE } from '../../../test-utils/createFakeMap'
 import { usePinLayer } from './usePinLayer'
 
 type FakeMap = ReturnType<typeof createFakeMap>['fakeMap']

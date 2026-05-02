@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { StoreFacilities } from '../../shared/types/store'
+import type { StoreFacilities } from '../../../shared/types/store'
 import { getStoreFacilityChips } from './storeFacilities'
 
 const baseFacilities: StoreFacilities = {

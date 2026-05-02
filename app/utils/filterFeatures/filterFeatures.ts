@@ -1,7 +1,7 @@
-import type { JumboStoreFeature } from '../../shared/types/geojson'
-import type { Coordinate } from '../../shared/types/store'
-import { distanceKm } from './distance'
-import { getStoreStatus } from './storeStatus'
+import type { JumboStoreFeature } from '../../../shared/types/geojson'
+import type { Coordinate } from '../../../shared/types/store'
+import { distanceKm } from '../distance/distance'
+import { getStoreStatus } from '../storeStatus/storeStatus'
 
 export interface FilterFeaturesInput {
     features: JumboStoreFeature[]

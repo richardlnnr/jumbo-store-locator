@@ -50,6 +50,54 @@ Coverage includes only `app/**/*.{ts,vue}`; configs and test files are excluded.
 
 **Use Nuxt UI for every UI primitive.** Buttons, inputs, modals, cards, layouts, icons, toasts, etc. must come from `@nuxt/ui` (`<UButton>`, `<UInput>`, `<UModal>`, `<UCard>`, `<UApp>`, …). Do not hand-roll equivalents in raw HTML/Tailwind, do not pull in another component library, and do not wrap a Nuxt UI component just to rename it. If a primitive seems missing, check the Nuxt UI catalog first (`https://ui.nuxt.com`); only fall back to a custom component when Nuxt UI genuinely has no equivalent, and document why in the component's source. Tailwind utility classes are fine for layout and spacing on top of Nuxt UI components — but the components themselves must be Nuxt UI.
 
+## Components
+
+**Every component lives in its own folder.** A component named `Foo` lives at `app/components/Foo/Foo.vue` and its colocated tests live alongside it (`app/components/Foo/Foo.nuxt.test.ts` or `Foo.test.ts`). Do not place loose `.vue` files directly under `app/components/`. Nuxt's `pathPrefix: true` de-duplicates consecutive path segments, so `Foo/Foo.vue` still auto-imports as `<Foo>` — the folder is purely organisational and does not change the tag.
+
+**Slice large components into sub-components.** When a component has multiple distinct visual or logical sections — header, body sections, footer, list rows, etc. — extract each section into its own sub-component nested under the parent's folder, following the StorePopup layout:
+
+```
+app/components/StorePopup/
+    StorePopup.vue
+    StorePopup.nuxt.test.ts
+    Header/
+        Header.vue
+        Header.nuxt.test.ts
+    Address/
+        Address.vue
+        Address.nuxt.test.ts
+    …
+```
+
+Sub-components auto-import with the parent's prefix (`StorePopup/Header/Header.vue` → `<StorePopupHeader>`). Slice when a component's template grows past a single screen, mixes unrelated concerns, or duplicates structure that could be data-driven. A bug fix or small feature does not need to slice a component — but a feature that doubles a component's size usually does.
+
+**Forbidden patterns**:
+
+- New components added as flat `.vue` files directly under `app/components/`.
+- Sub-components placed in a sibling folder rather than nested inside the parent's folder (`app/components/StorePopupHeader/` instead of `app/components/StorePopup/Header/`).
+- Cross-component relative imports between sibling components (`import StatusPill from '../StatusPill/StatusPill.vue'`) — rely on Nuxt auto-import in templates instead. Relative imports inside tests are fine because test files do not benefit from auto-import.
+
+## Composables and utilities
+
+The same folder-per-file convention extends to `app/composables/`, `app/utils/`, and `shared/utils/`. A composable named `useFoo` lives at `app/composables/useFoo/useFoo.ts` with its colocated test alongside; a util named `bar` lives at `app/utils/bar/bar.ts`. Unlike components, these are auto-imported by their named export rather than by file path, so the folder is purely organisational — it does not change the import name. The rule pays its way by giving private helpers a place to land when a composable or utility grows beyond a single file (extract them as siblings under the same folder), and by keeping the boundary mental model consistent across `components/`, `composables/`, and `utils/`. Sub-component slicing has no analogue here — a composable with internal helpers stays one auto-imported function, and its helpers are private.
+
+Nuxt's auto-import only scans the top level of `composables/` and `utils/` by default; nested folders are picked up via `imports.dirs` in `nuxt.config.ts`:
+
+```ts
+imports: {
+    dirs: [
+        'composables/**',
+        'utils/**',
+    ],
+},
+```
+
+If you ever flatten this layout, remove that block — but the layout is the standard, so leave it in place.
+
+**Forbidden patterns**:
+
+- New composables or utilities added as flat `.ts` files directly under `app/composables/`, `app/utils/`, or `shared/utils/`.
+
 ## Responsive design
 
 **Author every component mobile-first.** The base styles target the smallest screen, and larger breakpoints are layered on top with Tailwind's `sm:`, `md:`, `lg:`, `xl:`, and `2xl:` variants (which compile to `min-width` media queries). Do not invert this — the codebase relies on the unprefixed class always describing the mobile state, so a contributor can reason about a component on a phone by reading only the unprefixed classes.
