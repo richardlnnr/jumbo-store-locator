@@ -1,9 +1,10 @@
 import type { Map as MapboxMap, MapOptions } from 'mapbox-gl'
-import { getCurrentScope, onScopeDispose, shallowRef } from 'vue'
+import { getCurrentScope, onScopeDispose, ref, shallowRef } from 'vue'
 
 export function useMapbox() {
     const { public: { mapboxToken } } = useRuntimeConfig()
     const map = shallowRef<MapboxMap | null>(null)
+    const isMapLoaded = ref(false)
 
     async function createMap(options: MapOptions) {
         if (!import.meta.client) return null
@@ -16,16 +17,23 @@ export function useMapbox() {
         const mapboxgl = (await import('mapbox-gl')).default
         mapboxgl.accessToken = mapboxToken
         map.value?.remove()
-        map.value = new mapboxgl.Map(options)
-        return map.value
+        isMapLoaded.value = false
+
+        const instance = new mapboxgl.Map(options)
+        instance.on('load', () => {
+            isMapLoaded.value = true
+        })
+        map.value = instance
+        return instance
     }
 
     if (getCurrentScope()) {
         onScopeDispose(() => {
             map.value?.remove()
             map.value = null
+            isMapLoaded.value = false
         })
     }
 
-    return { createMap, map }
+    return { createMap, map, isMapLoaded }
 }
