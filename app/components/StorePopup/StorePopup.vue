@@ -25,7 +25,7 @@ onKeyStroke('Escape', () => emit('close'))
             data-component="store-popup"
             aria-modal="true"
             :aria-label="props.store.name"
-            class="flex w-[min(380px,calc(100vw-32px))] max-h-(--store-popup-max-h,calc(100dvh-120px)) flex-col overflow-clip rounded-2xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+            class="static flex w-[min(380px,calc(100vw-32px))] max-h-(--store-popup-max-h,calc(100dvh-120px)) flex-col overflow-clip rounded-2xl bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
         >
             <StorePopupHeader
                 :store="store"
