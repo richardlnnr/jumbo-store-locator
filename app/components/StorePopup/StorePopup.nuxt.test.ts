@@ -30,6 +30,13 @@ describe('StorePopup', () => {
         expect(inner.emitted('close')).toHaveLength(1)
     })
 
+    it('Should render the dialog in normal flow so the Mapbox popup-content sizes to it', async () => {
+        const wrapper = await mountWithUApp(StorePopup, { store: supermarketFixture })
+
+        const dialog = wrapper.get('dialog[data-component="store-popup"]')
+        expect(dialog.classes()).toContain('static')
+    })
+
     it('Should keep the header and footer outside the scroll container while address, hours and facilities live inside it', async () => {
         const wrapper = await mountWithUApp(StorePopup, { store: supermarketFixture })
 
