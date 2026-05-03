@@ -1,8 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMapbox } from './useMapbox'
 
+type MapboxEventHandler = () => void
+
+const loadHandlers = vi.hoisted(() => [] as MapboxEventHandler[])
+
 const mapInstanceMock = vi.hoisted(() => ({
     remove: vi.fn(),
+    on: vi.fn((event: string, handler: MapboxEventHandler) => {
+        if (event === 'load') loadHandlers.push(handler)
+    }),
 }))
 
 const mapboxMock = vi.hoisted(() => ({
@@ -16,10 +23,16 @@ vi.mock('mapbox-gl', () => ({
     default: mapboxMock,
 }))
 
+const fireMapLoad = () => {
+    for (const handler of loadHandlers) handler()
+}
+
 describe('useMapbox', () => {
     beforeEach(() => {
         mapboxMock.Map.mockClear()
         mapInstanceMock.remove.mockClear()
+        mapInstanceMock.on.mockClear()
+        loadHandlers.length = 0
         mapboxMock.accessToken = ''
         useRuntimeConfig().public.mapboxToken = 'pk.test'
     })
@@ -55,5 +68,35 @@ describe('useMapbox', () => {
         await expect(createMap({ container: 'map' } as never))
             .rejects.toThrow(/NUXT_PUBLIC_MAPBOX_TOKEN/)
         expect(mapboxMock.Map).not.toHaveBeenCalled()
+    })
+
+    it('Should expose isMapLoaded as false before the map fires load', async () => {
+        const { createMap, isMapLoaded } = useMapbox()
+
+        await createMap({ container: 'map' } as never)
+
+        expect(isMapLoaded.value).toBe(false)
+        expect(mapInstanceMock.on).toHaveBeenCalledWith('load', expect.any(Function))
+    })
+
+    it('Should flip isMapLoaded to true once the Mapbox load event fires', async () => {
+        const { createMap, isMapLoaded } = useMapbox()
+
+        await createMap({ container: 'map' } as never)
+        fireMapLoad()
+
+        expect(isMapLoaded.value).toBe(true)
+    })
+
+    it('Should reset isMapLoaded to false when createMap is called again', async () => {
+        const { createMap, isMapLoaded } = useMapbox()
+
+        await createMap({ container: 'map' } as never)
+        fireMapLoad()
+        expect(isMapLoaded.value).toBe(true)
+
+        await createMap({ container: 'map' } as never)
+
+        expect(isMapLoaded.value).toBe(false)
     })
 })

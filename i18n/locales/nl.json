@@ -28,6 +28,10 @@
   "store-map": {
     "placeholder": "Winkelkaart komt binnenkort"
   },
+  "map-loading": {
+    "headline": "Kaart laden",
+    "caption": "Winkels in de buurt zoeken"
+  },
   "store-popup": {
     "subtitle": "{type} · {distance}",
     "subtitle-no-distance": "{type}",

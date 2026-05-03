@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import { shallowRef } from 'vue'
+import { nextTick, ref, shallowRef } from 'vue'
 
 import { useStoreLocator } from '~~/app/stores/useStoreLocator'
 import {
@@ -16,12 +16,14 @@ type MountedWrapper = Awaited<ReturnType<typeof mountSuspended>>
 
 const harness = createFakeMap()
 const mapRef = shallowRef<typeof harness.fakeMap | null>(null)
+const isMapLoadedRef = ref(false)
 
 const createMapMock = vi.hoisted(() => vi.fn())
 
 mockNuxtImport('useMapbox', () => () => ({
     createMap: createMapMock,
     map: mapRef,
+    isMapLoaded: isMapLoadedRef,
 }))
 
 const sampleFeatureCollection: JumboStoreFeatureCollection = {
@@ -66,6 +68,7 @@ beforeEach(() => {
     harness.layerHandlers.clear()
     harness.loadHandlers.length = 0
     mapRef.value = null
+    isMapLoadedRef.value = false
     createMapMock.mockReset()
     createMapMock.mockImplementation(async () => {
         mapRef.value = harness.fakeMap
@@ -99,5 +102,24 @@ describe('StoreMap', () => {
         expect(options.center).toBeUndefined()
         expect(options.zoom).toBeUndefined()
         expect(options.style).toBe('mapbox://styles/mapbox/streets-v12')
+    })
+
+    it('Should render the loading overlay while isMapLoaded is false', async () => {
+        isMapLoadedRef.value = false
+
+        const mounted = await mountStoreMap()
+
+        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(true)
+    })
+
+    it('Should hide the loading overlay once isMapLoaded flips to true', async () => {
+        const mounted = await mountStoreMap()
+        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(true)
+
+        isMapLoadedRef.value = true
+        await nextTick()
+        await nextTick()
+
+        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(false)
     })
 })
