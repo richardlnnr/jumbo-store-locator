@@ -1,6 +1,6 @@
 import { refDebounced } from '@vueuse/core'
 import { defineStore } from 'pinia'
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 
 import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
 import type { MobileView } from '../../shared/types/mobileView'
@@ -216,6 +216,8 @@ export const useStoreLocator = defineStore('storeLocator', () => {
             applySearchTerm()
         }, SHRINK_APPLY_DEBOUNCE_MS)
     }, { flush: 'sync' })
+
+    onScopeDispose(cancelShrinkApply)
 
     return {
         featureCollection,
