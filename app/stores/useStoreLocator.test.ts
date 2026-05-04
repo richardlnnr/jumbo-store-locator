@@ -49,6 +49,19 @@ describe('useStoreLocator', () => {
         expect(store.query).toBe('')
         expect(store.cityFilter).toEqual([])
         expect(store.openOnly).toBe(false)
+        expect(store.mobileView).toBe('list')
+    })
+
+    it('Should update mobileView via setMobileView', () => {
+        const store = useStoreLocator()
+
+        store.setMobileView('map')
+
+        expect(store.mobileView).toBe('map')
+
+        store.setMobileView('list')
+
+        expect(store.mobileView).toBe('list')
     })
 
     it('Should expose an empty FeatureCollection from filteredFeatureCollection before fetch', () => {

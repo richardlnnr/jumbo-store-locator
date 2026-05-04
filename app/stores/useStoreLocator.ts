@@ -25,6 +25,8 @@ export const useStoreLocator = defineStore('storeLocator', () => {
     const cityFilter = ref<string[]>([])
     const openOnly = ref(false)
 
+    const mobileView = ref<'list' | 'map'>('list')
+
     const debouncedQuery = refDebounced(query, QUERY_DEBOUNCE_MS)
 
     const storeByIdMap = computed(() => {
@@ -114,6 +116,10 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         openOnly.value = false
     }
 
+    function setMobileView(view: 'list' | 'map'): void {
+        mobileView.value = view
+    }
+
     return {
         featureCollection,
         loading,
@@ -123,6 +129,7 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         query,
         cityFilter,
         openOnly,
+        mobileView,
         filteredFeatureCollection,
         cities,
         storeById,
@@ -135,5 +142,6 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         setCityFilter,
         setOpenOnly,
         clearFilters,
+        setMobileView,
     }
 })
