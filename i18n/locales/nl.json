@@ -15,8 +15,28 @@
   "store-list": {
     "title": "Zoek een winkel",
     "count": "{count} winkels in Nederland",
-    "search-placeholder": "Zoek op naam of stad",
     "empty": "Geen winkels gevonden voor deze filters"
+  },
+  "search-autocomplete": {
+    "placeholder": "Zoek op naam of stad...",
+    "group-stores": "Winkels",
+    "group-cities": "Steden",
+    "cap-notice": "De eerste {count} resultaten worden getoond. Verfijn je zoekopdracht om deze te beperken.",
+    "no-results": "Geen winkels gevonden voor {query}.",
+    "empty-title": "Zoek op naam of stad",
+    "empty-hint": "Probeer een stad zoals '{city}' of een winkelnaam",
+    "empty-example-city": "Veghel",
+    "hint-navigate": "Navigeren",
+    "hint-select": "Kiezen",
+    "hint-close": "Sluiten",
+    "city-stores-count": "{count} winkels · {province}",
+    "aria-results-count": "{stores} en {cities} gevonden voor {query}",
+    "aria-results-stores": "geen winkels | {count} winkel | {count} winkels",
+    "aria-results-cities": "geen steden | {count} stad | {count} steden",
+    "aria-no-results": "Geen winkels gevonden voor {query}",
+    "aria-clear": "Zoekopdracht wissen",
+    "aria-back": "Zoeken sluiten",
+    "aria-trigger": "Zoeken openen"
   },
   "filters": {
     "open-now": "Nu open",

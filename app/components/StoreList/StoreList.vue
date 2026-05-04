@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { useMediaQuery } from '@vueuse/core'
-import type { JumboStoreFeature } from '~~/shared/types/geojson'
 
 const { t } = useI18n()
 const store = useStoreLocator()
 const isDesktop = useMediaQuery('(min-width: 768px)', { ssrWidth: 1280 })
 
-const distanceLabelFor = (feature: JumboStoreFeature) =>
-    store.userLocation
-        ? getDistanceLabel(store.userLocation, feature.properties.location)
-        : null
+const distanceLabelFor = useStoreDistanceLabel()
+const searchVariant = useSearchVariant()
 
 const inactiveChipClass = 'bg-white border border-neutral-200 text-neutral-900 hover:bg-neutral-50'
 const activeChipClass = 'bg-yellow-200 border border-yellow-200 text-neutral-900 hover:bg-yellow-200'
@@ -52,7 +49,8 @@ const onRowSelect = (id: string): void => {
                 </p>
             </div>
 
-            <Search />
+            <SearchAutocomplete v-if="searchVariant === 'autocomplete'" />
+            <Search v-else />
 
             <div class="flex flex-wrap gap-2">
                 <UButton

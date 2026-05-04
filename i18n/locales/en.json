@@ -15,8 +15,28 @@
   "store-list": {
     "title": "Find a store",
     "count": "{count} stores in the Netherlands",
-    "search-placeholder": "Search by name or city",
     "empty": "No stores match your filters"
+  },
+  "search-autocomplete": {
+    "placeholder": "Search by name or city...",
+    "group-stores": "Stores",
+    "group-cities": "Cities",
+    "cap-notice": "Showing the first {count} results. Refine your search to narrow them.",
+    "no-results": "No stores match {query}.",
+    "empty-title": "Search by name or city",
+    "empty-hint": "Try a city like '{city}' or a store name",
+    "empty-example-city": "Veghel",
+    "hint-navigate": "Navigate",
+    "hint-select": "Select",
+    "hint-close": "Close",
+    "city-stores-count": "{count} stores · {province}",
+    "aria-results-count": "{stores} and {cities} found for {query}",
+    "aria-results-stores": "no stores | {count} store | {count} stores",
+    "aria-results-cities": "no cities | {count} city | {count} cities",
+    "aria-no-results": "No stores match {query}",
+    "aria-clear": "Clear search",
+    "aria-back": "Close search",
+    "aria-trigger": "Open search"
   },
   "filters": {
     "open-now": "Open now",
