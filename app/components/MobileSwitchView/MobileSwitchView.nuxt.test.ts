@@ -65,8 +65,8 @@ describe('MobileSwitchView', () => {
 
         const liveRegion = wrapper.find('[data-slot="view-toggle-live-region"]')
         expect(liveRegion.exists()).toBe(true)
+        expect(liveRegion.element.tagName).toBe('OUTPUT')
         expect(liveRegion.attributes('aria-live')).toBe('polite')
-        expect(liveRegion.attributes('role')).toBe('status')
         expect(liveRegion.text()).toBe('Now showing list')
     })
 

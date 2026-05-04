@@ -38,13 +38,12 @@ const onClick = (): void => {
         >
             {{ label }}
         </UButton>
-        <span
+        <output
             data-slot="view-toggle-live-region"
             class="sr-only"
-            role="status"
             aria-live="polite"
         >
             {{ liveAnnouncement }}
-        </span>
+        </output>
     </div>
 </template>
