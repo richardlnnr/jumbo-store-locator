@@ -1,17 +1,34 @@
 import { refDebounced } from '@vueuse/core'
 import { defineStore } from 'pinia'
-import { computed, ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef, watch } from 'vue'
 
 import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
 import type { MobileView } from '../../shared/types/mobileView'
 import type { Coordinate, JumboStore } from '../../shared/types/store'
+import type { AutocompleteSuggestions } from '../../shared/types/storeSuggestion'
+import { formatCityName } from '../../shared/utils/cityName/cityName'
+import { aggregateCities } from '../utils/aggregateCities/aggregateCities'
 import { filterFeatures } from '../utils/filterFeatures/filterFeatures'
+import { matchFeatures } from '../utils/matchFeatures/matchFeatures'
+import { rankCities } from '../utils/rankCities/rankCities'
+import { rankFeatures } from '../utils/rankFeatures/rankFeatures'
 
 const QUERY_DEBOUNCE_MS = 200
+const SHRINK_APPLY_DEBOUNCE_MS = 300
+
+export const SUGGESTION_STORE_LIMIT = 5
+export const SUGGESTION_CITY_LIMIT = 5
 
 const emptyFeatureCollection: JumboStoreFeatureCollection = {
     type: 'FeatureCollection',
     features: [],
+}
+
+const emptyAutocompleteSuggestions: AutocompleteSuggestions = {
+    topStores: [],
+    isStoresCapped: false,
+    topCities: [],
+    isCitiesCapped: false,
 }
 
 export const useStoreLocator = defineStore('storeLocator', () => {
@@ -23,6 +40,7 @@ export const useStoreLocator = defineStore('storeLocator', () => {
     const userLocation = ref<Coordinate | null>(null)
 
     const query = ref('')
+    const searchTerm = ref('')
     const cityFilter = ref<string[]>([])
     const openOnly = ref(false)
 
@@ -50,6 +68,38 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         const features = featureCollection.value?.features ?? []
         return [...new Set(features.map(feature => feature.properties.location.address.city))]
             .sort((cityA, cityB) => cityA.localeCompare(cityB))
+    })
+
+    const storesPerCity = computed<Map<string, number>>(() => {
+        const counts = new Map<string, number>()
+        const features = featureCollection.value?.features ?? []
+        for (const feature of features) {
+            const key = feature.properties.location.address.city.toLowerCase()
+            counts.set(key, (counts.get(key) ?? 0) + 1)
+        }
+        return counts
+    })
+
+    const autocompleteSuggestions = computed<AutocompleteSuggestions>(() => {
+        const term = searchTerm.value.trim()
+        const features = featureCollection.value?.features
+        if (!term || !features?.length) return emptyAutocompleteSuggestions
+
+        const matched = matchFeatures(features, term)
+        const rankedStores = rankFeatures(matched, term)
+        const rankedCities = rankCities(aggregateCities(matched), term)
+
+        return {
+            topStores: rankedStores.slice(0, SUGGESTION_STORE_LIMIT),
+            isStoresCapped: rankedStores.length > SUGGESTION_STORE_LIMIT,
+            topCities: rankedCities.slice(0, SUGGESTION_CITY_LIMIT).map(aggregate => ({
+                name: formatCityName(aggregate.city),
+                rawName: aggregate.city,
+                state: aggregate.state,
+                storesCount: storesPerCity.value.get(aggregate.city.toLowerCase()) ?? 0,
+            })),
+            isCitiesCapped: rankedCities.length > SUGGESTION_CITY_LIMIT,
+        }
     })
 
     const filteredFeatureCollection = computed<JumboStoreFeatureCollection>(() => {
@@ -104,6 +154,18 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         query.value = value
     }
 
+    function setSearchTerm(value: string): void {
+        searchTerm.value = value
+    }
+
+    function applySearchTerm(): void {
+        query.value = searchTerm.value
+    }
+
+    function revertSearchTerm(): void {
+        searchTerm.value = query.value
+    }
+
     function setCityFilter(value: string[]): void {
         cityFilter.value = [...value]
     }
@@ -113,7 +175,9 @@ export const useStoreLocator = defineStore('storeLocator', () => {
     }
 
     function clearFilters(): void {
+        cancelShrinkApply()
         query.value = ''
+        searchTerm.value = ''
         cityFilter.value = []
         openOnly.value = false
     }
@@ -133,6 +197,26 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         pendingSelectionId.value = null
     }
 
+    let shrinkApplyTimer: ReturnType<typeof setTimeout> | null = null
+
+    function cancelShrinkApply(): void {
+        if (shrinkApplyTimer === null) return
+        clearTimeout(shrinkApplyTimer)
+        shrinkApplyTimer = null
+    }
+
+    watch(searchTerm, (current, previous = '') => {
+        if (current.length >= previous.length) {
+            cancelShrinkApply()
+            return
+        }
+        cancelShrinkApply()
+        shrinkApplyTimer = setTimeout(() => {
+            shrinkApplyTimer = null
+            applySearchTerm()
+        }, SHRINK_APPLY_DEBOUNCE_MS)
+    }, { flush: 'sync' })
+
     return {
         featureCollection,
         loading,
@@ -140,11 +224,13 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         selectedStoreId,
         userLocation,
         query,
+        searchTerm,
         cityFilter,
         openOnly,
         mobileView,
         pendingSelectionId,
         filteredFeatureCollection,
+        autocompleteSuggestions,
         cities,
         storeById,
         selectedStore,
@@ -153,6 +239,9 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         clearSelection,
         setUserLocation,
         setQuery,
+        setSearchTerm,
+        applySearchTerm,
+        revertSearchTerm,
         setCityFilter,
         setOpenOnly,
         clearFilters,
