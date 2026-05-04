@@ -6,7 +6,7 @@ const store = useStoreLocator()
 <template>
     <UInput
         :model-value="store.query"
-        :placeholder="t('store-list.search-placeholder')"
+        :placeholder="t('search-autocomplete.placeholder')"
         icon="i-lucide-search"
         size="lg"
         :ui="{ base: 'rounded-xl bg-neutral-100 ring-neutral-200' }"
