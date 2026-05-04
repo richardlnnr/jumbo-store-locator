@@ -98,6 +98,76 @@ If you ever flatten this layout, remove that block — but the layout is the sta
 
 - New composables or utilities added as flat `.ts` files directly under `app/composables/`, `app/utils/`, or `shared/utils/`.
 
+## Data flow: filters, ranking, aggregations live in the store
+
+All filtering, ranking, and aggregation of `JumboStore` feature data MUST happen inside the Pinia store (`app/stores/useStoreLocator.ts`). Components, composables, and pages consume reactive properties exposed by the store — they never call `array.filter`, `array.sort`, `array.reduce`, or equivalent against `featureCollection.features` themselves.
+
+The store delegates the algorithms to pure utilities under `app/utils/<name>/<name>.ts` (e.g. `matchFeatures`, `rankFeatures`, `aggregateCities`). Each util takes plain inputs and returns plain outputs — no Pinia, no Vue refs, no `useStoreLocator`. This keeps the store body readable, keeps the algorithms unit-testable in isolation, and ensures every consumer of "filtered features" or "ranked suggestions" sees the same answer because they share the same util.
+
+When two views need related-but-different filtering (for example the side-list `filteredFeatureCollection` versus `autocompleteSuggestions`), share the matching predicate via the same util — never re-implement.
+
+**Forbidden patterns**:
+
+- `array.filter(...)`, `array.sort(...)`, or `array.reduce(...)` over `featureCollection.features` (or any reactive feature collection) inside `.vue` files or composables.
+- Composables that re-implement matching, ranking, or aggregation already covered by a store computed.
+- Adding a new "view" of feature data via component-local state.
+
+**Required when you need a new view**:
+
+1. Extract the algorithm into a pure util at `app/utils/<name>/<name>.ts` with a colocated `*.test.ts`.
+2. Add a new `computed` to `useStoreLocator` that calls the util.
+3. Consume the computed from the component or page.
+
+```ts
+// GOOD — store composes pure utils
+const filteredFeatureCollection = computed(() =>
+    filterFeatures({ features: features.value, query: query.value, /* ... */ }),
+)
+const autocompleteSuggestions = computed(() =>
+    buildSuggestions(features.value, searchTerm.value),
+)
+
+// BAD — component runs its own filter
+const matches = computed(() =>
+    store.featureCollection?.features.filter(f => f.properties.name.includes(query.value)),
+)
+```
+
+## Domain types live in `shared/types`
+
+Pinia stores under `app/stores/` MUST NOT declare `interface` or `type` definitions for the data they expose. Every domain-level shape — anything a consumer (component, composable, test, page) might need to import as a type annotation — lives in `shared/types/<name>.ts` and is imported by the store.
+
+This keeps stores focused on state and actions, lets every consumer import from a single canonical location, and avoids circular-import traps where a component reaches into a store just to grab a type.
+
+The rule is scoped to **stores**. Component-internal helper types (e.g. a discriminated union used only inside a single `.vue` for a slot's items) and util-internal types (e.g. `HighlightSegment` returned by `app/utils/highlightMatch/`) stay where they are — only the data shapes the store *exposes* must move.
+
+**Forbidden**:
+
+- `export interface CitySuggestion { ... }` inside `app/stores/useStoreLocator.ts`.
+- `type Foo = ...` declarations inside any file under `app/stores/` for shapes consumed outside that file.
+- Components importing types from `app/stores/<name>.ts`.
+
+**Required**:
+
+- Add or extend a file under `shared/types/<name>.ts` with the type.
+- Type-only imports from a store may use either the relative path (`'../../shared/types/<name>'`) or the `~~/shared/<name>` alias.
+- **Value imports** from a store (constants, helper functions exported alongside the types) MUST use the `~~/shared/...` alias. Relative paths crossing out of `app/` for value imports cause Vite's SSR build to externalize the chunk with a literal `.ts` extension, which Nitro's bundler then fails to resolve. The alias is resolved before externalization, so the extension never leaks. The `unit` Vitest project resolves `~~` via `vitest.config.ts` (`resolve.alias`) so unit tests still load these imports.
+- Components and composables import the same type from `~~/shared/types/<name>`.
+
+```ts
+// shared/types/storeSuggestion.ts
+export interface CitySuggestion { /* ... */ }
+export interface AutocompleteSuggestions { /* ... */ }
+export const SUGGESTION_STORE_LIMIT = 5
+
+// app/stores/useStoreLocator.ts
+import type { AutocompleteSuggestions } from '~~/shared/types/storeSuggestion'
+import { SUGGESTION_STORE_LIMIT } from '~~/shared/types/storeSuggestion'
+
+// app/components/SearchAutocomplete/Mobile/Mobile.vue
+import type { CitySuggestion } from '~~/shared/types/storeSuggestion'
+```
+
 ## Responsive design
 
 **Author every component mobile-first.** The base styles target the smallest screen, and larger breakpoints are layered on top with Tailwind's `sm:`, `md:`, `lg:`, `xl:`, and `2xl:` variants (which compile to `min-width` media queries). Do not invert this — the codebase relies on the unprefixed class always describing the mobile state, so a contributor can reason about a component on a phone by reading only the unprefixed classes.

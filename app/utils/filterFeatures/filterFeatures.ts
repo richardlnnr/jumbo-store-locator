@@ -1,6 +1,7 @@
 import type { JumboStoreFeature } from '../../../shared/types/geojson'
 import type { Coordinate } from '../../../shared/types/store'
 import { distanceKm } from '../distance/distance'
+import { matchFeatures } from '../matchFeatures/matchFeatures'
 import { getStoreStatus } from '../storeStatus/storeStatus'
 
 export interface FilterFeaturesInput {
@@ -10,13 +11,6 @@ export interface FilterFeaturesInput {
     openOnly: boolean
     now: Date | null
     userLocation: Coordinate | null
-}
-
-const matchesQuery = (feature: JumboStoreFeature, normalizedQuery: string): boolean => {
-    if (!normalizedQuery) return true
-    const name = feature.properties.name.toLowerCase()
-    const city = feature.properties.location.address.city.toLowerCase()
-    return name.includes(normalizedQuery) || city.includes(normalizedQuery)
 }
 
 const matchesCity = (feature: JumboStoreFeature, allowedCities: Set<string>): boolean => {
@@ -30,14 +24,12 @@ const isOpenNow = (feature: JumboStoreFeature, now: Date | null): boolean => {
 }
 
 export function filterFeatures(input: FilterFeaturesInput): JumboStoreFeature[] {
-    const normalizedQuery = input.query.trim().toLowerCase()
     const allowedCities = new Set(
         input.cityFilter.map(city => city.trim().toLowerCase()).filter(city => city.length > 0),
     )
 
-    const matched = input.features.filter(feature =>
-        matchesQuery(feature, normalizedQuery)
-        && matchesCity(feature, allowedCities)
+    const matched = matchFeatures(input.features, input.query).filter(feature =>
+        matchesCity(feature, allowedCities)
         && (!input.openOnly || isOpenNow(feature, input.now)),
     )
 

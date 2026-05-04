@@ -1,5 +1,8 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import { defineVitestProject } from '@nuxt/test-utils/config'
+
+const projectRoot = fileURLToPath(new URL('.', import.meta.url))
 
 // Pin the test timezone so date-sensitive logic (store opening hours,
 // "open now / closed" labels) produces the same result on every machine —
@@ -26,6 +29,12 @@ export default defineConfig({
         },
         projects: [
             {
+                resolve: {
+                    alias: {
+                        '~~': projectRoot,
+                        '@@': projectRoot,
+                    },
+                },
                 test: {
                     name: 'unit',
                     include: ['**/*.test.ts'],
