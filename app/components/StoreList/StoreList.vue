@@ -52,14 +52,7 @@ const onRowSelect = (id: string): void => {
                 </p>
             </div>
 
-            <UInput
-                :model-value="store.query"
-                :placeholder="t('store-list.search-placeholder')"
-                icon="i-lucide-search"
-                size="lg"
-                :ui="{ base: 'rounded-xl bg-neutral-100 ring-neutral-200' }"
-                @update:model-value="store.setQuery"
-            />
+            <Search />
 
             <div class="flex flex-wrap gap-2">
                 <UButton
