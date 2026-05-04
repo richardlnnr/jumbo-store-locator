@@ -27,6 +27,11 @@ mockNuxtImport('useMapbox', () => () => ({
     isMapLoaded: isMapLoadedRef,
 }))
 
+mockNuxtImport('useStorePopup', () => () => {
+    const container = import.meta.client ? document.createElement('div') : null
+    return { popupContainer: shallowRef(container) }
+})
+
 const sampleFeatureCollection: JumboStoreFeatureCollection = {
     type: 'FeatureCollection',
     features: [eindhovenFeature, amsterdamCentrumFeature, amsterdamSouthFeature],
