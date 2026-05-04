@@ -5,8 +5,8 @@ import type { SuggestionItem } from '../../../shared/types/storeSuggestion'
 import {
     SUGGESTION_CITY_LIMIT,
     SUGGESTION_STORE_LIMIT,
-    useStoreLocator,
-} from '../../stores/useStoreLocator'
+} from '../../../shared/types/storeSuggestion'
+import { useStoreLocator } from '../../stores/useStoreLocator'
 
 export const useSuggestionItems = (): ComputedRef<SuggestionItem[]> => {
     const store = useStoreLocator()
