@@ -17,10 +17,9 @@ const announcement = computed(() => {
     if (suggestions.topStores.length === 0 && suggestions.topCities.length === 0) {
         return t('search-autocomplete.aria-no-results', { query: term })
     }
-    return t('search-autocomplete.aria-results-count', {
-        count: suggestions.topStores.length,
-        cityCount: suggestions.topCities.length,
-    })
+    const stores = t('search-autocomplete.aria-results-stores', { count: suggestions.topStores.length })
+    const cities = t('search-autocomplete.aria-results-cities', { count: suggestions.topCities.length })
+    return t('search-autocomplete.aria-results-count', { stores, cities })
 })
 
 const debouncedAnnouncement = refDebounced(announcement, 200)

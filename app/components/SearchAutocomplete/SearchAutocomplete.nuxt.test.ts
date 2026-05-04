@@ -47,7 +47,7 @@ describe('SearchAutocomplete', () => {
         expect(liveRegion.classes()).toContain('sr-only')
     })
 
-    it('Should announce the result count from the typing buffer after the debounce window', async () => {
+    it('Should announce the result count using singular and plural forms after the debounce window', async () => {
         const locator = seedThree()
         const wrapper = await mountWithUApp(SearchAutocomplete)
 
@@ -55,7 +55,7 @@ describe('SearchAutocomplete', () => {
 
         await vi.waitFor(() => {
             const liveRegion = wrapper.find('[aria-live="polite"]')
-            expect(liveRegion.text()).toContain('2 stores and 1 cities found')
+            expect(liveRegion.text()).toContain('2 stores and 1 city found')
         }, { timeout: 2000 })
     })
 
