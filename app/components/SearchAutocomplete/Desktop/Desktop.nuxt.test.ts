@@ -107,6 +107,32 @@ describe('SearchAutocompleteDesktop', () => {
         }, { timeout: 2000 })
     })
 
+    it('Should select from the start to the caret when the user presses Shift+Home in the input', async () => {
+        seedAmsterdamThree()
+        const wrapper = await mountWithUApp(SearchAutocompleteDesktop)
+        const input = wrapper.find('input[type="text"]').element as HTMLInputElement
+        input.value = 'amsterdam'
+        input.setSelectionRange(5, 5)
+
+        await wrapper.find('input[type="text"]').trigger('keydown', { key: 'Home', shiftKey: true })
+
+        expect(input.selectionStart).toBe(0)
+        expect(input.selectionEnd).toBe(5)
+    })
+
+    it('Should select from the caret to the end when the user presses Shift+End in the input', async () => {
+        seedAmsterdamThree()
+        const wrapper = await mountWithUApp(SearchAutocompleteDesktop)
+        const input = wrapper.find('input[type="text"]').element as HTMLInputElement
+        input.value = 'amsterdam'
+        input.setSelectionRange(3, 3)
+
+        await wrapper.find('input[type="text"]').trigger('keydown', { key: 'End', shiftKey: true })
+
+        expect(input.selectionStart).toBe(3)
+        expect(input.selectionEnd).toBe('amsterdam'.length)
+    })
+
     it('Should not open its teleported popover when the viewport is below the desktop breakpoint', async () => {
         const originalMatchMedia = window.matchMedia
         window.matchMedia = ((query: string) => ({

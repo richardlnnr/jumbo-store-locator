@@ -135,8 +135,8 @@ const menuUi = {
         @keydown.enter="onEnter"
         @focusin="onInputFocus"
         @click="onInputFocus"
-        @keyup.exact.shift.home="restoreSelectionOnShiftHomeOrEnd"
-        @keyup.exact.shift.end="restoreSelectionOnShiftHomeOrEnd"
+        @keydown.exact.shift.home.prevent="restoreSelectionOnShiftHomeOrEnd"
+        @keydown.exact.shift.end.prevent="restoreSelectionOnShiftHomeOrEnd"
     >
         <template #trailing>
             <UButton
