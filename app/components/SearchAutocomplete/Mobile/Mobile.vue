@@ -115,10 +115,6 @@ defineExpose({ open, openModal, closeModal })
                                 base: 'min-h-11 rounded-full border-2 border-yellow-500 bg-white ring-0 focus:ring-0',
                                 leading: 'text-neutral-500',
                             }"
-                            role="combobox"
-                            aria-controls="search-autocomplete-mobile-listbox"
-                            :aria-expanded="store.searchTerm.trim().length > 0"
-                            aria-autocomplete="list"
                             @keydown.enter="onEnter"
                             @keydown.esc="closeModal"
                         >
@@ -137,10 +133,8 @@ defineExpose({ open, openModal, closeModal })
                     </header>
 
                     <div
-                        id="search-autocomplete-mobile-listbox"
-                        role="listbox"
+                        data-slot="suggestions"
                         class="flex-1 overflow-y-auto"
-                        :aria-label="t('app-shell.list-region')"
                     >
                         <SearchAutocompleteEmptyState
                             v-if="store.searchTerm.trim().length === 0"
@@ -158,12 +152,21 @@ defineExpose({ open, openModal, closeModal })
                             <li
                                 v-for="(item, index) in suggestionItems"
                                 :key="`${item.kind}-${index}`"
-                                :role="isSelectableItem(item) ? 'option' : 'presentation'"
-                                :aria-selected="isSelectableItem(item) ? false : undefined"
-                                :class="isSelectableItem(item) ? 'cursor-pointer' : ''"
-                                @click="onItemClick(item)"
                             >
+                                <button
+                                    v-if="isSelectableItem(item)"
+                                    type="button"
+                                    data-slot="suggestion-row"
+                                    class="block w-full cursor-pointer border-0 bg-transparent p-0 text-left"
+                                    @click="onItemClick(item)"
+                                >
+                                    <SearchAutocompleteSuggestionItem
+                                        :item="item"
+                                        :query="store.searchTerm"
+                                    />
+                                </button>
                                 <SearchAutocompleteSuggestionItem
+                                    v-else
                                     :item="item"
                                     :query="store.searchTerm"
                                 />

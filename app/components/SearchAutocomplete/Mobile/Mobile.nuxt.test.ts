@@ -55,7 +55,7 @@ describe('SearchAutocompleteMobile', () => {
         await wrapper.find('[data-slot="trigger"]').trigger('click')
 
         await vi.waitFor(() => {
-            expect(document.body.innerHTML).toContain('search-autocomplete-mobile-listbox')
+            expect(document.querySelector('[data-slot="suggestions"]')).not.toBeNull()
         }, { timeout: 1000 })
     })
 
@@ -85,7 +85,7 @@ describe('SearchAutocompleteMobile', () => {
             expect(document.body.innerHTML).toContain(amsterdamCentrumFeature.properties.name)
         }, { timeout: 2000 })
 
-        const firstStoreRow = document.querySelector('#search-autocomplete-mobile-listbox [role="option"]')
+        const firstStoreRow = document.querySelector('[data-slot="suggestions"] [data-slot="suggestion-row"]')
         expect(firstStoreRow).not.toBeNull()
         ;(firstStoreRow as HTMLElement).click()
 
