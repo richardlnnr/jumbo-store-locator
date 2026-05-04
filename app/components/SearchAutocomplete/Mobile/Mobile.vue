@@ -6,29 +6,33 @@ const store = useStoreLocator()
 const suggestionItems = useSuggestionItems()
 
 const open = ref(false)
-const triggerRef = ref<HTMLButtonElement | null>(null)
-const inputRef = ref<HTMLInputElement | null>(null)
 let justApplied = false
 
 const triggerLabel = computed(() => store.query.trim() || t('search-autocomplete.placeholder'))
 const triggerIsPlaceholder = computed(() => store.query.trim().length === 0)
 
-const openModal = () => {
+const searchTermProxy = computed<string>({
+    get: () => store.searchTerm,
+    set: (value) => {
+        store.setSearchTerm(value)
+    },
+})
+
+const openModal = (): void => {
     store.setSearchTerm(store.query)
     open.value = true
 }
 
-const closeModal = () => {
+const closeModal = (): void => {
     open.value = false
 }
 
-const onClear = () => {
+const onClear = (): void => {
     store.setSearchTerm('')
     store.applySearchTerm()
-    nextTick(() => inputRef.value?.focus())
 }
 
-const commitSearch = (override?: string) => {
+const commitSearch = (override?: string): void => {
     if (override !== undefined) store.setSearchTerm(override)
     justApplied = true
     store.applySearchTerm()
@@ -41,22 +45,18 @@ const commitSearch = (override?: string) => {
 const isSelectableItem = (item: SuggestionItem): item is Extract<SuggestionItem, { kind: 'store' | 'city' }> =>
     item.kind === 'store' || item.kind === 'city'
 
-const onItemClick = (item: SuggestionItem) => {
+const onItemClick = (item: SuggestionItem): void => {
     if (item.kind === 'store') commitSearch(item.label)
     else if (item.kind === 'city') commitSearch(item.city.rawName)
 }
 
-const onEnter = (event: KeyboardEvent) => {
+const onEnter = (event: KeyboardEvent): void => {
     event.preventDefault()
     commitSearch()
 }
 
-watch(open, async (isOpen) => {
-    if (isOpen) {
-        await nextTick()
-        inputRef.value?.focus()
-        return
-    }
+watch(open, (isOpen) => {
+    if (isOpen) return
     if (!justApplied) store.revertSearchTerm()
 })
 
@@ -66,7 +66,6 @@ defineExpose({ open, openModal, closeModal })
 <template>
     <div data-slot="autocomplete-mobile">
         <button
-            ref="triggerRef"
             type="button"
             data-slot="trigger"
             :aria-label="t('search-autocomplete.aria-trigger')"
@@ -105,40 +104,36 @@ defineExpose({ open, openModal, closeModal })
                             :ui="{ base: 'min-h-11 min-w-11' }"
                             @click="closeModal"
                         />
-                        <div class="flex min-h-11 flex-1 items-center gap-2.5 rounded-full border-2 border-yellow-500 bg-white px-3 py-2">
-                            <UIcon
-                                name="i-lucide-search"
-                                class="size-5 shrink-0 text-neutral-500"
-                                aria-hidden="true"
-                            />
-                            <input
-                                ref="inputRef"
-                                type="text"
-                                :value="store.searchTerm"
-                                :placeholder="t('search-autocomplete.placeholder')"
-                                class="min-w-0 flex-1 bg-transparent text-base text-neutral-900 outline-none placeholder:text-neutral-500"
-                                role="combobox"
-                                aria-controls="search-autocomplete-mobile-listbox"
-                                :aria-expanded="store.searchTerm.trim().length > 0"
-                                aria-autocomplete="list"
-                                @input="(event) => store.setSearchTerm((event.target as HTMLInputElement).value)"
-                                @keydown.enter="onEnter"
-                                @keydown.esc="closeModal"
-                            >
-                            <button
-                                v-if="store.searchTerm.length > 0"
-                                type="button"
-                                :aria-label="t('search-autocomplete.aria-clear')"
-                                class="flex min-h-11 min-w-11 items-center justify-center text-neutral-500"
-                                @click="onClear"
-                            >
-                                <UIcon
-                                    name="i-lucide-x"
-                                    class="size-5"
-                                    aria-hidden="true"
+                        <UInput
+                            v-model="searchTermProxy"
+                            :placeholder="t('search-autocomplete.placeholder')"
+                            icon="i-lucide-search"
+                            size="lg"
+                            autofocus
+                            class="flex-1"
+                            :ui="{
+                                base: 'min-h-11 rounded-full border-2 border-yellow-500 bg-white ring-0 focus:ring-0',
+                                leading: 'text-neutral-500',
+                            }"
+                            role="combobox"
+                            aria-controls="search-autocomplete-mobile-listbox"
+                            :aria-expanded="store.searchTerm.trim().length > 0"
+                            aria-autocomplete="list"
+                            @keydown.enter="onEnter"
+                            @keydown.esc="closeModal"
+                        >
+                            <template #trailing>
+                                <UButton
+                                    v-if="store.searchTerm.length > 0"
+                                    :aria-label="t('search-autocomplete.aria-clear')"
+                                    icon="i-lucide-x"
+                                    size="xs"
+                                    color="neutral"
+                                    variant="ghost"
+                                    @click="onClear"
                                 />
-                            </button>
-                        </div>
+                            </template>
+                        </UInput>
                     </header>
 
                     <div
