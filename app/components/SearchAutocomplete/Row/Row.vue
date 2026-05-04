@@ -76,28 +76,32 @@ const containerClass = computed(() => [
         </span>
 
         <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-            <span
-                data-slot="title"
-                class="truncate text-[15px] leading-5 font-medium tracking-[-0.005em] text-neutral-900"
-                aria-hidden="true"
-            >
-                <template
-                    v-for="(segment, index) in titleSegments"
-                    :key="index"
+            <UTooltip :text="titleText">
+                <span
+                    data-slot="title"
+                    class="block truncate text-[15px] leading-5 font-medium tracking-[-0.005em] text-neutral-900"
+                    aria-hidden="true"
                 >
-                    <span
-                        v-if="segment.bold"
-                        class="font-bold"
-                    >{{ segment.text }}</span>
-                    <template v-else>{{ segment.text }}</template>
-                </template>
-            </span>
-            <span
-                data-slot="subline"
-                class="truncate text-[13px] leading-[18px] text-neutral-600"
-            >
-                {{ subline }}
-            </span>
+                    <template
+                        v-for="(segment, index) in titleSegments"
+                        :key="index"
+                    >
+                        <span
+                            v-if="segment.bold"
+                            class="font-bold"
+                        >{{ segment.text }}</span>
+                        <template v-else>{{ segment.text }}</template>
+                    </template>
+                </span>
+            </UTooltip>
+            <UTooltip :text="subline">
+                <span
+                    data-slot="subline"
+                    class="block truncate text-[13px] leading-[18px] text-neutral-600"
+                >
+                    {{ subline }}
+                </span>
+            </UTooltip>
         </div>
 
         <span
