@@ -25,6 +25,10 @@
     "cities-selected": "{count} geselecteerd",
     "clear": "Wissen"
   },
+  "view-toggle": {
+    "show-map": "Toon kaart",
+    "show-list": "Toon lijst"
+  },
   "store-map": {
     "placeholder": "Winkelkaart komt binnenkort"
   },

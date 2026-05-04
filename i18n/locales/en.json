@@ -25,6 +25,10 @@
     "cities-selected": "{count} selected",
     "clear": "Clear"
   },
+  "view-toggle": {
+    "show-map": "Show map",
+    "show-list": "Show list"
+  },
   "store-map": {
     "placeholder": "Store map coming soon"
   },
