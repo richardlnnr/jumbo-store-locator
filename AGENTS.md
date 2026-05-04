@@ -168,6 +168,43 @@ import { SUGGESTION_STORE_LIMIT } from '~~/shared/types/storeSuggestion'
 import type { CitySuggestion } from '~~/shared/types/storeSuggestion'
 ```
 
+## Tailwind canonical classes
+
+**Never ship an arbitrary value that the Tailwind scale already covers.** The Tailwind CSS IntelliSense extension surfaces this as the `suggestCanonicalClasses` warning — for example, `max-w-[300px]` is flagged with "can be written as `max-w-75`", because the project's `--spacing` token (`0.25rem`, declared in `app/assets/css/tokens.css`) multiplies into the core scale: `4px × 75 = 300px`. Treat every one of these warnings as a blocker before commit. The same rule applies to the dozens of equivalences the IDE flags: `gap-[16px]` → `gap-4`, `w-[1px]` → `w-px`, `h-[2px]` → `h-0.5`, `top-[7.5rem]` → `top-30`, `p-[1rem]` → `p-4`, `text-[16px]` → `text-base`. If a hand-written arbitrary turns out to land on the spacing multiplier or matches a built-in size, rewrite it as the named step.
+
+**Prefer project-token utilities over arbitrary values, even when the IDE doesn't flag them.** The design tokens in `app/assets/css/tokens.css` (under `@theme static`) extend the Tailwind scale with project-specific steps — colors (`--color-yellow-500`, `--color-neutral-200`, …), type (`--text-2xs` … `--text-xl`), spacing (`--spacing-2xs` … `--spacing-3xl`), radius (`--radius-sm` … `--radius-full`), and shadow (`--shadow-sm/md/lg`). Tailwind v4 maps these into utilities automatically, so `text-xs`, `bg-yellow-500`, `gap-md`, `rounded-lg`, and `shadow-md` resolve to the registered tokens. Reach for the named utility first; the IntelliSense rule won't catch every drift here (it doesn't know that `text-[13px]` is off-scale because there's no `--text-13` token), so the responsibility shifts to the author.
+
+When a design genuinely needs a value neither the Tailwind scale nor `tokens.css` covers, **add it to `tokens.css` first**, then use the named utility. The scale is intentionally constrained (type is even-px, spacing/radius are multiples of 4) — promoting a one-off into the registry forces a moment of "is this really a new step, or am I matching something that already exists?" before it scatters across the codebase.
+
+**Color literals are forbidden everywhere.** No `bg-[#hex]`, no `text-[rgb(...)]`, no inline `style="color: ..."`. Every color flows through `--color-*` (brand palette) or `--ui-*` (Nuxt UI runtime). If a needed shade is missing from `tokens.css`, source the hex from the brand site, classify it by HSL, and add it as `--color-<palette>-<step>` — never as a semantic alias like `--color-success` or `--color-button-bg`. Semantic aliasing happens at the consumer.
+
+**Use the v4 CSS-variable utility syntax for tokenized arbitrary needs**: `max-h-(--store-popup-max-h,calc(100dvh-120px))`, not `max-h-[var(--store-popup-max-h)]`. The parenthesised form is shorter, type-checked by Tailwind, and what the rest of the codebase uses (see `app/components/StorePopup/StorePopup.vue`).
+
+**Override `--ui-*` (Nuxt UI) tokens globally in `app/assets/css/main.css`, never per-component.** The override block sits *after* `@import "@nuxt/ui"` so it wins by cascade order. Per-component overrides via `:ui="{...}"` or `<style>` blocks fragment the design system and break in unrelated places when Nuxt UI updates. The current global override (`--ui-bg-elevated: var(--color-yellow-50)`) is the template — if another `--ui-*` needs realigning, add it next to that one with a comment explaining why.
+
+**Don't use `space-x-*` / `space-y-*`.** Use flex / grid with `gap-*`. The codebase has zero `space-*` utilities and the gap idiom composes correctly with wrapping, RTL flips, and Nuxt UI's own layout components.
+
+**Inline `style="..."` is only for runtime-dynamic values** that can't be expressed as a class — for example, per-element `animation-delay` calculated from an index. Static design (color, padding, font-size, dimensions) belongs in classes that can be linted and refactored.
+
+**Forbidden patterns**:
+
+- Any class flagged by the Tailwind CSS IntelliSense `suggestCanonicalClasses` warning — these are arbitraries that have an exact named equivalent on the Tailwind core scale. Common offenders: `gap-[16px]` (use `gap-4`), `w-[1px]` (use `w-px`), `h-[2px]` (use `h-0.5`), `top-[7.5rem]` (use `top-30`), `max-w-[300px]` (use `max-w-75`), `p-[1rem]` (use `p-4`).
+- Arbitrary text sizes that match an existing token: `text-[12px]` (use `text-xs`), `text-[14px]` (use `text-sm`), `text-[16px]` (use `text-base`), `text-[20px]` (use `text-lg`), `text-[24px]` (use `text-xl`).
+- Off-scale text sizes scattered as arbitraries (`text-[11px]`, `text-[13px]`, `text-[15px]`, `text-[17px]`). Either promote the value to `tokens.css` (with a brand-source justification) or pick the nearest registered step.
+- Color literals in any form (`bg-[#fff]`, `text-[rgb(...)]`, `border-[hsl(...)]`, inline `style="color: …"`).
+- `max-*:` Tailwind variants and `@media (max-width: …)` queries — already covered by the mobile-first rule below; restating because it's the most common drift point.
+- Per-component overrides of `--ui-*` tokens via `<style>` blocks, `style="--ui-...: ..."`, or `:ui` slot strings that re-declare the token.
+- Static design values written as `style="..."` on an element that already has Tailwind classes (the two languages mixing on the same element makes the diff hard to read and the precedence non-obvious).
+- `space-x-*` / `space-y-*` for spacing between siblings.
+
+**Acceptable arbitrary values**:
+
+- Decorative compositions where the values *are* the design — handcrafted illustration positions, custom scribble shapes, generative animation offsets. `app/components/MapLoadingOverlay/MapLoadingOverlay.vue` is the canonical example: its `top-[12%]`, `left-[-5%]`, `rotate-[-3deg]`, etc. are part of the artwork and would lose meaning if normalised onto a scale.
+- One-off CSS-variable references via the parenthesised form: `max-h-(--store-popup-max-h,...)`, `bg-(--color-yellow-50)`. These read tokens at runtime — they're not literals.
+- Calc-based viewport math that genuinely needs the calc: `w-[min(380px,calc(100vw-32px))]`, `max-h-[calc(100vh-180px)]`. Add the result as a token only if the same calc appears in two places or more.
+
+**When you touch a file that violates this rule**, normalise the offenders in a dedicated commit so the visual diff is reviewable on its own, separate from any behaviour change in the same PR.
+
 ## Responsive design
 
 **Author every component mobile-first.** The base styles target the smallest screen, and larger breakpoints are layered on top with Tailwind's `sm:`, `md:`, `lg:`, `xl:`, and `2xl:` variants (which compile to `min-width` media queries). Do not invert this — the codebase relies on the unprefixed class always describing the mobile state, so a contributor can reason about a component on a phone by reading only the unprefixed classes.
