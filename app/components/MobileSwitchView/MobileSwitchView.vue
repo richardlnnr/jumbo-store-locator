@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { MobileView } from '~~/shared/types/mobileView'
+
 const { t } = useI18n()
 const store = useStoreLocator()
 const { mobileView } = storeToRefs(store)
 
-const otherView = computed<'list' | 'map'>(() => (mobileView.value === 'list' ? 'map' : 'list'))
+const otherView = computed<MobileView>(() => (mobileView.value === 'list' ? 'map' : 'list'))
 
 const label = computed(() =>
     mobileView.value === 'list'
