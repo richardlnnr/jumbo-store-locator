@@ -30,7 +30,7 @@
     "hint-select": "Kiezen",
     "hint-close": "Sluiten",
     "city-stores-count": "{count} winkels · {province}",
-    "aria-results-count": "{stores} en {cities} gevonden",
+    "aria-results-count": "{stores} en {cities} gevonden voor {query}",
     "aria-results-stores": "geen winkels | {count} winkel | {count} winkels",
     "aria-results-cities": "geen steden | {count} stad | {count} steden",
     "aria-no-results": "Geen winkels gevonden voor {query}",

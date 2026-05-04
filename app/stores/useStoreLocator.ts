@@ -47,36 +47,35 @@ export const useStoreLocator = defineStore('storeLocator', () => {
 
     const debouncedQuery = refDebounced(query, QUERY_DEBOUNCE_MS)
 
-    const storeByIdMap = computed(() => {
-        const lookup = new Map<string, JumboStore>()
+    const featureIndexes = computed(() => {
         const features = featureCollection.value?.features ?? []
+        const storeByIdMap = new Map<string, JumboStore>()
+        const citiesSet = new Set<string>()
+        const storesPerCity = new Map<string, number>()
         for (const feature of features) {
-            lookup.set(feature.properties.storeId, feature.properties)
+            const properties = feature.properties
+            const city = properties.location.address.city
+            storeByIdMap.set(properties.storeId, properties)
+            citiesSet.add(city)
+            const key = city.toLowerCase()
+            storesPerCity.set(key, (storesPerCity.get(key) ?? 0) + 1)
         }
-        return lookup
+        return {
+            storeByIdMap,
+            cities: [...citiesSet].sort((cityA, cityB) => cityA.localeCompare(cityB)),
+            storesPerCity,
+        }
     })
+
+    const storeByIdMap = computed(() => featureIndexes.value.storeByIdMap)
+    const cities = computed(() => featureIndexes.value.cities)
+    const storesPerCity = computed(() => featureIndexes.value.storesPerCity)
 
     const storeById = (id: string): JumboStore | null => storeByIdMap.value.get(id) ?? null
 
     const selectedStore = computed<JumboStore | null>(() =>
         selectedStoreId.value ? storeById(selectedStoreId.value) : null,
     )
-
-    const cities = computed<string[]>(() => {
-        const features = featureCollection.value?.features ?? []
-        return [...new Set(features.map(feature => feature.properties.location.address.city))]
-            .sort((cityA, cityB) => cityA.localeCompare(cityB))
-    })
-
-    const storesPerCity = computed<Map<string, number>>(() => {
-        const counts = new Map<string, number>()
-        const features = featureCollection.value?.features ?? []
-        for (const feature of features) {
-            const key = feature.properties.location.address.city.toLowerCase()
-            counts.set(key, (counts.get(key) ?? 0) + 1)
-        }
-        return counts
-    })
 
     const autocompleteSuggestions = computed<AutocompleteSuggestions>(() => {
         const term = searchTerm.value.trim()

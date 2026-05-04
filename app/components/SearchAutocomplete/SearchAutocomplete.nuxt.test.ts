@@ -55,8 +55,8 @@ describe('SearchAutocomplete', () => {
 
         await vi.waitFor(() => {
             const liveRegion = wrapper.find('[aria-live="polite"]')
-            expect(liveRegion.text()).toContain('2 stores and 1 city found')
-        }, { timeout: 2000 })
+            expect(liveRegion.text()).toContain('2 stores and 1 city found for amsterdam')
+        }, { timeout: 3000 })
     })
 
     it('Should announce the no-results copy when the typing buffer matches nothing', async () => {
@@ -68,7 +68,7 @@ describe('SearchAutocomplete', () => {
         await vi.waitFor(() => {
             const liveRegion = wrapper.find('[aria-live="polite"]')
             expect(liveRegion.text()).toContain('No stores match xyznotamatch')
-        }, { timeout: 2000 })
+        }, { timeout: 3000 })
     })
 
     it('Should revert the typing buffer to the applied query when the viewport breakpoint flips', async () => {

@@ -19,10 +19,10 @@ const announcement = computed(() => {
     }
     const stores = t('search-autocomplete.aria-results-stores', { count: suggestions.topStores.length })
     const cities = t('search-autocomplete.aria-results-cities', { count: suggestions.topCities.length })
-    return t('search-autocomplete.aria-results-count', { stores, cities })
+    return t('search-autocomplete.aria-results-count', { stores, cities, query: term })
 })
 
-const debouncedAnnouncement = refDebounced(announcement, 200)
+const debouncedAnnouncement = refDebounced(announcement, 600)
 </script>
 
 <template>

@@ -30,7 +30,7 @@
     "hint-select": "Select",
     "hint-close": "Close",
     "city-stores-count": "{count} stores · {province}",
-    "aria-results-count": "{stores} and {cities} found",
+    "aria-results-count": "{stores} and {cities} found for {query}",
     "aria-results-stores": "no stores | {count} store | {count} stores",
     "aria-results-cities": "no cities | {count} city | {count} cities",
     "aria-no-results": "No stores match {query}",
