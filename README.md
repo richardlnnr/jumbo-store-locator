@@ -97,6 +97,33 @@ Start the dev server on `http://localhost:3000`:
 npm run dev
 ```
 
+## Feature flags
+
+This project does not yet have a dedicated feature-flag system (no LaunchDarkly, Unleash, GrowthBook, or env-driven flag store). When a flag is needed for short-lived A/B testing or dogfooding, the chosen mechanism is the **URL query string**, read via `useRoute()`.
+
+The router is a good fit for this for a few reasons:
+
+- It is **reactive** — flipping the URL re-renders consumers without a reload.
+- It is **SSR-safe** — `useRoute()` is available at server-render time, so the initial HTML matches the eventual hydrated UI (no flash of the wrong variant).
+- It is **shareable** — paste the URL to QA or a teammate and they see the same variant.
+- It needs **zero new dependencies** and no env-var coordination.
+
+Drawbacks (visible to end users; not persistent across navigation; awkward for multi-flag scenarios) are acceptable for the current scope: short-lived, single-flag, dev/QA-driven testing.
+
+### Active flags
+
+| Flag      | URL              | Behavior                                            |
+| --------- | ---------------- | --------------------------------------------------- |
+| Search UI | `?search=legacy` | Renders `<Search>` (the previous text input).       |
+|           | _absent_ / other | Renders `<SearchAutocomplete>` (default).           |
+
+Examples:
+
+- <http://localhost:3000/> — default (autocomplete).
+- <http://localhost:3000/?search=legacy> — legacy input.
+
+When the autocomplete has been validated long enough, this flag and its legacy branch can be removed by deleting `app/components/Search/`, the `useSearchVariant` composable, the `v-if`/`v-else` in `app/components/StoreList/StoreList.vue`, and this section.
+
 ## API
 
 ### `GET /api/stores`
