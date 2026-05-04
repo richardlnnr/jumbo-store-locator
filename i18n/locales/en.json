@@ -27,7 +27,9 @@
   },
   "view-toggle": {
     "show-map": "Show map",
-    "show-list": "Show list"
+    "show-list": "Show list",
+    "now-showing-list": "Now showing list",
+    "now-showing-map": "Now showing map"
   },
   "store-map": {
     "placeholder": "Store map coming soon"

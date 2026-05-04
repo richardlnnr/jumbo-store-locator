@@ -51,4 +51,33 @@ describe('MobileSwitchView', () => {
         const pill = wrapper.find(pillSelector)
         expect(pill.classes()).toContain('md:hidden')
     })
+
+    it('Should preserve a focus-visible outline ring on the pill', async () => {
+        const wrapper = await mountWithUApp(MobileSwitchView)
+
+        const pill = wrapper.find(pillSelector)
+        expect(pill.classes()).toContain('focus-visible:outline-2')
+        expect(pill.classes()).toContain('focus-visible:outline-yellow-500')
+    })
+
+    it('Should expose a polite live region announcing the current view', async () => {
+        const wrapper = await mountWithUApp(MobileSwitchView)
+
+        const liveRegion = wrapper.find('[data-slot="view-toggle-live-region"]')
+        expect(liveRegion.exists()).toBe(true)
+        expect(liveRegion.attributes('aria-live')).toBe('polite')
+        expect(liveRegion.attributes('role')).toBe('status')
+        expect(liveRegion.text()).toBe('Now showing list')
+    })
+
+    it('Should update the live region announcement when mobileView flips to map', async () => {
+        const wrapper = await mountWithUApp(MobileSwitchView)
+        const locator = useStoreLocator()
+
+        locator.setMobileView('map')
+        await wrapper.vm.$nextTick()
+
+        const liveRegion = wrapper.find('[data-slot="view-toggle-live-region"]')
+        expect(liveRegion.text()).toBe('Now showing map')
+    })
 })
