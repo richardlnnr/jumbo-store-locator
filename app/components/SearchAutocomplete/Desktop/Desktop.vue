@@ -61,7 +61,7 @@ const onModelValueUpdate = (value: unknown): void => {
     if (!value || typeof value !== 'object') return
     const item = value as SuggestionItem
     if (item.kind !== 'store' && item.kind !== 'city') return
-    const target = item.kind === 'store' ? item.label : item.city.rawName
+    const target = item.kind === 'store' ? item.label : item.city.name
     store.setSearchTerm(target)
     commitSearch()
 }

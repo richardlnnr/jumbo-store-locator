@@ -47,7 +47,7 @@ const isSelectableItem = (item: SuggestionItem): item is Extract<SuggestionItem,
 
 const onItemClick = (item: SuggestionItem): void => {
     if (item.kind === 'store') commitSearch(item.label)
-    else if (item.kind === 'city') commitSearch(item.city.rawName)
+    else if (item.kind === 'city') commitSearch(item.city.name)
 }
 
 const onEnter = (event: KeyboardEvent): void => {
