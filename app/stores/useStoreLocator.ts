@@ -26,6 +26,7 @@ export const useStoreLocator = defineStore('storeLocator', () => {
     const openOnly = ref(false)
 
     const mobileView = ref<'list' | 'map'>('list')
+    const pendingSelectionId = ref<string | null>(null)
 
     const debouncedQuery = refDebounced(query, QUERY_DEBOUNCE_MS)
 
@@ -120,6 +121,17 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         mobileView.value = view
     }
 
+    function queuePendingSelection(id: string): void {
+        pendingSelectionId.value = id
+        mobileView.value = 'map'
+    }
+
+    function flushPendingSelection(): void {
+        if (pendingSelectionId.value === null) return
+        selectStore(pendingSelectionId.value)
+        pendingSelectionId.value = null
+    }
+
     return {
         featureCollection,
         loading,
@@ -130,6 +142,7 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         cityFilter,
         openOnly,
         mobileView,
+        pendingSelectionId,
         filteredFeatureCollection,
         cities,
         storeById,
@@ -143,5 +156,7 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         setOpenOnly,
         clearFilters,
         setMobileView,
+        queuePendingSelection,
+        flushPendingSelection,
     }
 })

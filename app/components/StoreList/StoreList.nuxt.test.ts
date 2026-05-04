@@ -51,9 +51,10 @@ const stubMatchMedia = (impl: (query: string) => MediaQueryList) => {
 describe('StoreList', () => {
     beforeEach(async () => {
         const locator = useStoreLocator()
+        locator.flushPendingSelection()
+        locator.clearSelection()
         locator.featureCollection = null
         locator.clearFilters()
-        locator.clearSelection()
         locator.setMobileView('list')
 
         stubMatchMedia(desktopMatchMedia)
@@ -142,9 +143,10 @@ describe('StoreList', () => {
 
         expect(locator.selectedStoreId).toBe(amsterdamCentrumFeature.properties.storeId)
         expect(locator.mobileView).toBe('list')
+        expect(locator.pendingSelectionId).toBeNull()
     })
 
-    it('Should swap to map first and defer the selection on mobile so the popup is created against the resized canvas', async () => {
+    it('Should queue a pending selection and flip mobileView to map on mobile, leaving the actual selection for StoreMap to flush', async () => {
         stubMatchMedia(mobileMatchMedia)
         const locator = seedThreeFeatures()
         const wrapper = await mountWithUApp(StoreList)
@@ -157,11 +159,8 @@ describe('StoreList', () => {
         await firstRowButton!.trigger('click')
 
         expect(locator.mobileView).toBe('map')
+        expect(locator.pendingSelectionId).toBe(amsterdamCentrumFeature.properties.storeId)
         expect(locator.selectedStoreId).toBeNull()
-
-        await vi.waitFor(() => {
-            expect(locator.selectedStoreId).toBe(amsterdamCentrumFeature.properties.storeId)
-        })
     })
 
     it('Should mark the row matching selectedStoreId as selected', async () => {

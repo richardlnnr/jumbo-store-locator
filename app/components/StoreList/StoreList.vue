@@ -2,8 +2,6 @@
 import { useMediaQuery } from '@vueuse/core'
 import type { JumboStoreFeature } from '~~/shared/types/geojson'
 
-const MOBILE_SELECTION_DELAY_MS = 50
-
 const { t } = useI18n()
 const store = useStoreLocator()
 const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -35,14 +33,7 @@ const onRowSelect = (id: string): void => {
         store.selectStore(id)
         return
     }
-    // On mobile the StoreMap section starts as display:none, so Mapbox
-    // initialised its canvas at the default 400x300. useStorePopup projects
-    // the pin's lng/lat against that canvas; selecting before StoreMap's
-    // mobileView watcher resizes the canvas anchors the popup to stale
-    // pixel coordinates. Swap the view first, then defer the selection so
-    // the resize has flushed before the popup is created.
-    store.setMobileView('map')
-    setTimeout(() => store.selectStore(id), MOBILE_SELECTION_DELAY_MS)
+    store.queuePendingSelection(id)
 }
 </script>
 

@@ -10,6 +10,7 @@ import {
 } from '~~/shared/types/store.mock'
 import type { JumboStoreFeatureCollection } from '~~/shared/types/geojson'
 import { createFakeMap } from '~~/test-utils/createFakeMap'
+import { mountWithUApp } from '~~/test-utils/mountWithUApp'
 import StoreMap from './StoreMap.vue'
 
 type MountedWrapper = Awaited<ReturnType<typeof mountSuspended>>
@@ -47,9 +48,11 @@ const mountStoreMap = async (
 
 beforeEach(() => {
     const locator = useStoreLocator()
+    locator.flushPendingSelection()
+    locator.clearSelection()
     locator.featureCollection = null
     locator.clearFilters()
-    locator.clearSelection()
+    locator.setMobileView('list')
 
     Object.values(harness.spies).forEach((spy) => {
         spy.mockClear()
@@ -121,5 +124,31 @@ describe('StoreMap', () => {
         await nextTick()
 
         expect(mounted.find('output[aria-busy="true"]').exists()).toBe(false)
+    })
+
+    it('Should call map.resize when mobileView flips to map', async () => {
+        seedThreeFeatures()
+        await mountStoreMap()
+        const locator = useStoreLocator()
+        harness.spies.resize.mockClear()
+
+        locator.setMobileView('map')
+
+        await vi.waitFor(() => {
+            expect(harness.spies.resize).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    it('Should flush a pending selection after the resize when mobileView flips to map', async () => {
+        seedThreeFeatures()
+        wrapper = await mountWithUApp(StoreMap)
+        const locator = useStoreLocator()
+
+        locator.queuePendingSelection(amsterdamCentrumFeature.properties.storeId)
+
+        await vi.waitFor(() => {
+            expect(locator.selectedStoreId).toBe(amsterdamCentrumFeature.properties.storeId)
+            expect(locator.pendingSelectionId).toBeNull()
+        })
     })
 })

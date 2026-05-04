@@ -25,7 +25,10 @@ onMounted(async () => {
 
 watch(mobileView, (view) => {
     if (view !== 'map') return
-    requestAnimationFrame(() => map.value?.resize())
+    requestAnimationFrame(() => {
+        map.value?.resize()
+        locator.flushPendingSelection()
+    })
 })
 </script>
 
