@@ -29,12 +29,12 @@ const debouncedAnnouncement = refDebounced(announcement, 600)
     <div data-slot="search-autocomplete">
         <SearchAutocompleteDesktop class="hidden md:block" />
         <SearchAutocompleteMobile class="md:hidden" />
-        <span
+        <output
             class="sr-only"
             aria-live="polite"
             aria-atomic="true"
         >
             {{ debouncedAnnouncement }}
-        </span>
+        </output>
     </div>
 </template>
