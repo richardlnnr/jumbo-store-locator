@@ -11,20 +11,18 @@ const suggestionItems = useSuggestionItems()
 
 const popoverOpen = ref(false)
 const isDesktopViewport = useMediaQuery('(min-width: 768px)')
-const rootRef = ref<HTMLElement | null>(null)
+const isMounted = ref(false)
 let suppressRevertUntil = 0
 
-const syncInputDom = (value: string) => {
-    const input = rootRef.value?.querySelector<HTMLInputElement>('input[role="combobox"]')
-    if (!input) return
-    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
-    setter?.call(input, value)
-    input.dispatchEvent(new Event('input', { bubbles: true }))
-}
+const isSuppressed = (): boolean => Date.now() < suppressRevertUntil
+
+onMounted(() => {
+    isMounted.value = true
+})
 
 watch(() => store.searchTerm, (current, previous) => {
     if (!isDesktopViewport.value) return
-    if (Date.now() < suppressRevertUntil) return
+    if (isSuppressed()) return
     if (current !== previous) popoverOpen.value = true
 })
 
@@ -32,26 +30,20 @@ watch(isDesktopViewport, (isDesktop) => {
     if (!isDesktop) popoverOpen.value = false
 })
 
-const commitSearch = () => {
+const commitSearch = (): void => {
     suppressRevertUntil = Date.now() + REVERT_SUPPRESSION_MS
     store.applySearchTerm()
     popoverOpen.value = false
-    requestAnimationFrame(() => {
-        popoverOpen.value = false
-    })
 }
 
-const userHasTyped = ref(false)
-
-const onSearchTermUpdate = (value: string) => {
-    if (!userHasTyped.value && value === '' && store.searchTerm !== '') return
-    if (value === '' && Date.now() < suppressRevertUntil) return
-    userHasTyped.value = true
+const onSearchTermUpdate = (value: string): void => {
+    if (!isMounted.value) return
+    if (value === '' && isSuppressed()) return
     store.setSearchTerm(value)
 }
 
-const onOpenChange = (next: boolean) => {
-    if (next && Date.now() < suppressRevertUntil) {
+const onOpenChange = (next: boolean): void => {
+    if (next && isSuppressed()) {
         popoverOpen.value = false
         return
     }
@@ -59,13 +51,13 @@ const onOpenChange = (next: boolean) => {
         popoverOpen.value = false
         return
     }
-    if (!next && popoverOpen.value && Date.now() >= suppressRevertUntil) {
+    if (!next && popoverOpen.value && !isSuppressed()) {
         store.revertSearchTerm()
     }
     popoverOpen.value = next
 }
 
-const onModelValueUpdate = (value: unknown) => {
+const onModelValueUpdate = (value: unknown): void => {
     if (!value || typeof value !== 'object') return
     const item = value as SuggestionItem
     if (item.kind !== 'store' && item.kind !== 'city') return
@@ -74,18 +66,18 @@ const onModelValueUpdate = (value: unknown) => {
     commitSearch()
 }
 
-const onEnter = (event: KeyboardEvent) => {
+const onEnter = (event: KeyboardEvent): void => {
     event.preventDefault()
     commitSearch()
 }
 
-const onInputFocus = () => {
-    if (Date.now() < suppressRevertUntil) return
+const onInputFocus = (): void => {
+    if (isSuppressed()) return
     if (!isDesktopViewport.value) return
     popoverOpen.value = true
 }
 
-const restoreSelectionOnShiftHomeOrEnd = (event: KeyboardEvent) => {
+const restoreSelectionOnShiftHomeOrEnd = (event: KeyboardEvent): void => {
     const target = event.target
     if (!(target instanceof HTMLInputElement)) return
     if (event.key === 'Home') {
@@ -98,10 +90,9 @@ const restoreSelectionOnShiftHomeOrEnd = (event: KeyboardEvent) => {
     }
 }
 
-const onClear = () => {
-    syncInputDom('')
-    store.setSearchTerm('')
+const onClear = (): void => {
     suppressRevertUntil = Date.now() + REVERT_SUPPRESSION_MS
+    store.setSearchTerm('')
     store.applySearchTerm()
     popoverOpen.value = false
 }
@@ -127,62 +118,57 @@ const menuUi = {
 </script>
 
 <template>
-    <div
-        ref="rootRef"
+    <UInputMenu
+        :search-term="store.searchTerm"
         class="block w-full"
+        :items="suggestionItems"
+        :open="popoverOpen"
+        ignore-filter
+        :placeholder="t('search-autocomplete.placeholder')"
+        icon="i-lucide-search"
+        size="lg"
+        :ui="{ ...inputUi, ...menuUi }"
+        :content="{ sideOffset: 0 }"
+        @update:search-term="onSearchTermUpdate"
+        @update:open="onOpenChange"
+        @update:model-value="onModelValueUpdate"
+        @keydown.enter="onEnter"
+        @focusin="onInputFocus"
+        @click="onInputFocus"
+        @keyup.exact.shift.home="restoreSelectionOnShiftHomeOrEnd"
+        @keyup.exact.shift.end="restoreSelectionOnShiftHomeOrEnd"
     >
-        <UInputMenu
-            :search-term="store.searchTerm"
-            class="w-full"
-            :items="suggestionItems"
-            :open="popoverOpen"
-            ignore-filter
-            :placeholder="t('search-autocomplete.placeholder')"
-            icon="i-lucide-search"
-            size="lg"
-            :ui="{ ...inputUi, ...menuUi }"
-            :content="{ sideOffset: 0 }"
-            @update:search-term="onSearchTermUpdate"
-            @update:open="onOpenChange"
-            @update:model-value="onModelValueUpdate"
-            @keydown.enter="onEnter"
-            @focusin="onInputFocus"
-            @click="onInputFocus"
-            @keyup.exact.shift.home="restoreSelectionOnShiftHomeOrEnd"
-            @keyup.exact.shift.end="restoreSelectionOnShiftHomeOrEnd"
-        >
-            <template #trailing>
-                <UButton
-                    v-show="store.searchTerm.length > 0"
-                    :aria-label="t('search-autocomplete.aria-clear')"
-                    icon="i-lucide-x"
-                    size="xs"
-                    color="neutral"
-                    variant="ghost"
-                    @click.stop="onClear"
-                    @mousedown.prevent
-                />
-            </template>
-            <template #item="{ item }">
-                <SearchAutocompleteSuggestionItem
-                    :item="item as SuggestionItem"
-                    :query="store.searchTerm"
-                />
-            </template>
-            <template #empty>
-                <SearchAutocompleteEmptyState
-                    v-if="store.searchTerm.trim().length === 0"
-                />
-                <p
-                    v-else
-                    class="px-4 py-6 text-center text-sm text-neutral-600"
-                >
-                    {{ t('search-autocomplete.no-results', { query: store.searchTerm }) }}
-                </p>
-            </template>
-            <template #content-bottom>
-                <SearchAutocompleteHintRow v-if="store.searchTerm.trim().length > 0" />
-            </template>
-        </UInputMenu>
-    </div>
+        <template #trailing>
+            <UButton
+                v-show="store.searchTerm.length > 0"
+                :aria-label="t('search-autocomplete.aria-clear')"
+                icon="i-lucide-x"
+                size="xs"
+                color="neutral"
+                variant="ghost"
+                @click.stop="onClear"
+                @mousedown.prevent
+            />
+        </template>
+        <template #item="{ item }">
+            <SearchAutocompleteSuggestionItem
+                :item="item as SuggestionItem"
+                :query="store.searchTerm"
+            />
+        </template>
+        <template #empty>
+            <SearchAutocompleteEmptyState
+                v-if="store.searchTerm.trim().length === 0"
+            />
+            <p
+                v-else
+                class="px-4 py-6 text-center text-sm text-neutral-600"
+            >
+                {{ t('search-autocomplete.no-results', { query: store.searchTerm }) }}
+            </p>
+        </template>
+        <template #content-bottom>
+            <SearchAutocompleteHintRow v-if="store.searchTerm.trim().length > 0" />
+        </template>
+    </UInputMenu>
 </template>
