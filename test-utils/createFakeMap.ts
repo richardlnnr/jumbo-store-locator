@@ -37,6 +37,7 @@ export const createFakeMap = (initialClientHeight = 900) => {
         },
     )
     const remove = vi.fn()
+    const resize = vi.fn()
 
     const fakeMap = {
         addSource,
@@ -48,6 +49,7 @@ export const createFakeMap = (initialClientHeight = 900) => {
         loadImage,
         easeTo,
         remove,
+        resize,
         getCanvas: () => canvas,
         on: (
             event: string,
@@ -90,6 +92,7 @@ export const createFakeMap = (initialClientHeight = 900) => {
             hasImage,
             loadImage,
             remove,
+            resize,
             easeTo,
             getClusterExpansionZoom,
         },

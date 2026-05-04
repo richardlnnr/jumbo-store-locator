@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, shallowRef } from 'vue'
 
 import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
+import type { MobileView } from '../../shared/types/mobileView'
 import type { Coordinate, JumboStore } from '../../shared/types/store'
 import { filterFeatures } from '../utils/filterFeatures/filterFeatures'
 
@@ -24,6 +25,9 @@ export const useStoreLocator = defineStore('storeLocator', () => {
     const query = ref('')
     const cityFilter = ref<string[]>([])
     const openOnly = ref(false)
+
+    const mobileView = ref<MobileView>('list')
+    const pendingSelectionId = ref<string | null>(null)
 
     const debouncedQuery = refDebounced(query, QUERY_DEBOUNCE_MS)
 
@@ -114,6 +118,21 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         openOnly.value = false
     }
 
+    function setMobileView(view: MobileView): void {
+        mobileView.value = view
+    }
+
+    function queuePendingSelection(id: string): void {
+        pendingSelectionId.value = id
+        mobileView.value = 'map'
+    }
+
+    function flushPendingSelection(): void {
+        if (pendingSelectionId.value === null) return
+        selectStore(pendingSelectionId.value)
+        pendingSelectionId.value = null
+    }
+
     return {
         featureCollection,
         loading,
@@ -123,6 +142,8 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         query,
         cityFilter,
         openOnly,
+        mobileView,
+        pendingSelectionId,
         filteredFeatureCollection,
         cities,
         storeById,
@@ -135,5 +156,8 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         setCityFilter,
         setOpenOnly,
         clearFilters,
+        setMobileView,
+        queuePendingSelection,
+        flushPendingSelection,
     }
 })

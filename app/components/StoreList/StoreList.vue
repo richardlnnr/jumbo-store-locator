@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { useMediaQuery } from '@vueuse/core'
 import type { JumboStoreFeature } from '~~/shared/types/geojson'
 
 const { t } = useI18n()
 const store = useStoreLocator()
+const isDesktop = useMediaQuery('(min-width: 768px)', { ssrWidth: 1280 })
 
 const distanceLabelFor = (feature: JumboStoreFeature) =>
     store.userLocation
@@ -24,6 +26,14 @@ const cityChipClass = computed(() => [
 
 function clearCities(): void {
     store.setCityFilter([])
+}
+
+const onRowSelect = (id: string): void => {
+    if (isDesktop.value) {
+        store.selectStore(id)
+        return
+    }
+    store.queuePendingSelection(id)
 }
 </script>
 
@@ -132,7 +142,7 @@ function clearCities(): void {
                     :store="feature.properties"
                     :distance-label="distanceLabelFor(feature)"
                     :selected="store.selectedStoreId === feature.properties.storeId"
-                    @select="store.selectStore(feature.properties.storeId)"
+                    @select="onRowSelect(feature.properties.storeId)"
                 />
             </li>
         </ul>

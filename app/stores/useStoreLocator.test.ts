@@ -49,6 +49,49 @@ describe('useStoreLocator', () => {
         expect(store.query).toBe('')
         expect(store.cityFilter).toEqual([])
         expect(store.openOnly).toBe(false)
+        expect(store.mobileView).toBe('list')
+        expect(store.pendingSelectionId).toBeNull()
+    })
+
+    it('Should update mobileView via setMobileView', () => {
+        const store = useStoreLocator()
+
+        store.setMobileView('map')
+
+        expect(store.mobileView).toBe('map')
+
+        store.setMobileView('list')
+
+        expect(store.mobileView).toBe('list')
+    })
+
+    it('Should set pendingSelectionId and flip mobileView to map via queuePendingSelection', () => {
+        const store = useStoreLocator()
+
+        store.queuePendingSelection('amsterdam-1')
+
+        expect(store.pendingSelectionId).toBe('amsterdam-1')
+        expect(store.mobileView).toBe('map')
+        expect(store.selectedStoreId).toBeNull()
+    })
+
+    it('Should call selectStore and clear pendingSelectionId via flushPendingSelection', () => {
+        const store = useStoreLocator()
+        store.queuePendingSelection('amsterdam-1')
+
+        store.flushPendingSelection()
+
+        expect(store.selectedStoreId).toBe('amsterdam-1')
+        expect(store.pendingSelectionId).toBeNull()
+    })
+
+    it('Should be a no-op when flushPendingSelection is called without a queued selection', () => {
+        const store = useStoreLocator()
+
+        store.flushPendingSelection()
+
+        expect(store.selectedStoreId).toBeNull()
+        expect(store.pendingSelectionId).toBeNull()
     })
 
     it('Should expose an empty FeatureCollection from filteredFeatureCollection before fetch', () => {

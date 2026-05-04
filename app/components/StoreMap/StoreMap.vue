@@ -4,7 +4,7 @@ const STREETS_STYLE = 'mapbox://styles/mapbox/streets-v12'
 const mapEl = useTemplateRef<HTMLDivElement>('mapEl')
 const { createMap, map, isMapLoaded } = useMapbox()
 const locator = useStoreLocator()
-const { filteredFeatureCollection, selectedStore, userLocation } = storeToRefs(locator)
+const { filteredFeatureCollection, selectedStore, userLocation, mobileView } = storeToRefs(locator)
 
 useStoreSource(map, filteredFeatureCollection)
 useClusterLayers(map)
@@ -22,6 +22,19 @@ onMounted(async () => {
         minZoom: 6,
     })
 })
+
+watch(mobileView, (view) => {
+    if (view !== 'map') return
+    requestAnimationFrame(() => {
+        map.value?.resize()
+        locator.flushPendingSelection()
+    })
+})
+
+const onPopupClose = (): void => {
+    locator.clearSelection()
+    locator.setMobileView('list')
+}
 </script>
 
 <template>
@@ -43,7 +56,7 @@ onMounted(async () => {
             <StorePopup
                 :store="selectedStore"
                 :user-location="userLocation"
-                @close="locator.clearSelection"
+                @close="onPopupClose"
             />
         </Teleport>
     </section>

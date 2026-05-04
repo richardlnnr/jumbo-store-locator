@@ -10,6 +10,7 @@ import {
 } from '~~/shared/types/store.mock'
 import type { JumboStoreFeatureCollection } from '~~/shared/types/geojson'
 import { createFakeMap } from '~~/test-utils/createFakeMap'
+import { mountWithUApp } from '~~/test-utils/mountWithUApp'
 import StoreMap from './StoreMap.vue'
 
 type MountedWrapper = Awaited<ReturnType<typeof mountSuspended>>
@@ -25,6 +26,11 @@ mockNuxtImport('useMapbox', () => () => ({
     map: mapRef,
     isMapLoaded: isMapLoadedRef,
 }))
+
+mockNuxtImport('useStorePopup', () => () => {
+    const container = import.meta.client ? document.createElement('div') : null
+    return { popupContainer: shallowRef(container) }
+})
 
 const sampleFeatureCollection: JumboStoreFeatureCollection = {
     type: 'FeatureCollection',
@@ -47,9 +53,11 @@ const mountStoreMap = async (
 
 beforeEach(() => {
     const locator = useStoreLocator()
+    locator.flushPendingSelection()
+    locator.clearSelection()
     locator.featureCollection = null
     locator.clearFilters()
-    locator.clearSelection()
+    locator.setMobileView('list')
 
     Object.values(harness.spies).forEach((spy) => {
         spy.mockClear()
@@ -121,5 +129,48 @@ describe('StoreMap', () => {
         await nextTick()
 
         expect(mounted.find('output[aria-busy="true"]').exists()).toBe(false)
+    })
+
+    it('Should call map.resize when mobileView flips to map', async () => {
+        seedThreeFeatures()
+        await mountStoreMap()
+        const locator = useStoreLocator()
+        harness.spies.resize.mockClear()
+
+        locator.setMobileView('map')
+
+        await vi.waitFor(() => {
+            expect(harness.spies.resize).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    it('Should flush a pending selection after the resize when mobileView flips to map', async () => {
+        seedThreeFeatures()
+        wrapper = await mountWithUApp(StoreMap)
+        const locator = useStoreLocator()
+
+        locator.queuePendingSelection(amsterdamCentrumFeature.properties.storeId)
+
+        await vi.waitFor(() => {
+            expect(locator.selectedStoreId).toBe(amsterdamCentrumFeature.properties.storeId)
+            expect(locator.pendingSelectionId).toBeNull()
+        })
+    })
+
+    it('Should reset mobileView to list and clear the selection when the popup emits close', async () => {
+        seedThreeFeatures()
+        const locator = useStoreLocator()
+        locator.selectStore(amsterdamCentrumFeature.properties.storeId)
+        locator.setMobileView('map')
+
+        wrapper = await mountWithUApp(StoreMap)
+
+        const popup = wrapper.findComponent({ name: 'StorePopup' })
+        expect(popup.exists()).toBe(true)
+        popup.vm.$emit('close')
+        await nextTick()
+
+        expect(locator.selectedStoreId).toBeNull()
+        expect(locator.mobileView).toBe('list')
     })
 })
