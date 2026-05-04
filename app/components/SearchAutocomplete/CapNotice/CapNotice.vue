@@ -14,7 +14,7 @@ const { t } = useI18n()
             class="mt-0.5 size-4 shrink-0 text-yellow-900"
             aria-hidden="true"
         />
-        <span class="text-[13px] leading-5 text-yellow-900">
+        <span class="text-sm leading-5 text-yellow-900">
             {{ t('search-autocomplete.cap-notice', { count }) }}
         </span>
     </div>

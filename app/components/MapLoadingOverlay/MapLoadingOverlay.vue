@@ -77,7 +77,7 @@
                 <p class="text-base font-semibold tracking-[-0.01em] text-neutral-900 md:text-lg">
                     {{ $t('map-loading.headline') }}
                 </p>
-                <p class="text-[13px] text-neutral-600 md:text-sm">
+                <p class="text-sm text-neutral-600">
                     {{ $t('map-loading.caption') }}
                 </p>
             </div>

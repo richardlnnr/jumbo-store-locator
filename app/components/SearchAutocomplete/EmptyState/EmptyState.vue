@@ -24,7 +24,7 @@ const { t } = useI18n()
         </p>
         <p
             data-slot="empty-hint"
-            class="max-w-[300px] text-center text-sm text-neutral-500"
+            class="max-w-75 text-center text-sm text-neutral-500"
         >
             {{ t('search-autocomplete.empty-hint', { city: t('search-autocomplete.empty-example-city') }) }}
         </p>

@@ -50,7 +50,7 @@ describe('stores/index page', () => {
         const wrapper = await mountSuspended(StoresIndex)
 
         const list = wrapper.find('aside')
-        expect(list.classes()).toContain('md:w-[420px]')
+        expect(list.classes()).toContain('md:w-105')
         expect(list.classes()).toContain('md:flex-none')
     })
 

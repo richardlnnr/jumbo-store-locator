@@ -17,7 +17,7 @@ const facilityChips = computed(() => getStoreFacilityChips(props.facilities))
         v-if="facilityChips.length"
         class="flex flex-col gap-3 border-t border-neutral-100 px-5 py-4"
     >
-        <h3 class="text-[13px] font-bold tracking-wider text-neutral-950 uppercase">
+        <h3 class="text-sm font-bold tracking-wider text-neutral-950 uppercase">
             {{ t('store-popup.facilities') }}
         </h3>
         <ul class="flex flex-wrap gap-2">
