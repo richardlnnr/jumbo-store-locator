@@ -42,14 +42,12 @@ const subtitle = computed(() => {
                 :ui="{ root: 'size-12 shrink-0 rounded-full ring-0' }"
             />
             <div class="flex min-w-0 flex-1 flex-col gap-1 pt-1">
-                <UTooltip :text="props.store.name">
-                    <h2
-                        data-slot="name"
-                        class="truncate text-lg leading-tight font-black text-neutral-950"
-                    >
-                        {{ props.store.name }}
-                    </h2>
-                </UTooltip>
+                <h2
+                    data-slot="name"
+                    class="text-base leading-tight font-black text-neutral-950"
+                >
+                    {{ props.store.name }}
+                </h2>
                 <p class="truncate text-sm text-neutral-600">
                     {{ subtitle }}
                 </p>

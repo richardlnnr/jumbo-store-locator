@@ -61,10 +61,10 @@ const dayRows = computed(() => {
                         : 'text-neutral-600',
                 ]"
             >
-                <span class="text-sm">
+                <span class="text-xs">
                     {{ row.isToday ? t('store-popup.today', { weekday: row.weekday }) : row.weekday }}
                 </span>
-                <span class="text-sm">
+                <span class="text-xs">
                     {{ row.timeRange ?? t('store-popup.closed-day') }}
                 </span>
             </li>
