@@ -1,4 +1,6 @@
+import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { computed } from 'vue'
 import { useStoreLocator } from '~~/app/stores/useStoreLocator'
 import { setI18nLocale } from '~~/test-utils/i18n'
 import { mountWithUApp } from '~~/test-utils/mountWithUApp'
@@ -7,7 +9,14 @@ import {
     amsterdamSouthFeature,
     eindhovenFeature,
 } from '~~/shared/types/store.mock'
-import StoreList from './StoreList.vue'
+
+const variantStub = vi.hoisted(() => ({
+    current: 'autocomplete' as 'autocomplete' | 'legacy',
+}))
+
+mockNuxtImport('useSearchVariant', () => () => computed(() => variantStub.current))
+
+const { default: StoreList } = await import('./StoreList.vue')
 
 const seedThreeFeatures = () => {
     const locator = useStoreLocator()
@@ -43,6 +52,8 @@ describe('StoreList', () => {
         locator.setMobileView('list')
 
         stubMatchMedia(true)
+
+        variantStub.current = 'autocomplete'
 
         await setI18nLocale('en')
         vi.useFakeTimers({ toFake: ['Date'] })
@@ -81,14 +92,27 @@ describe('StoreList', () => {
         })
     })
 
-    it('Should write to the Pinia query when the user types in the search input', async () => {
+    it('Should write the typed value to the Pinia searchTerm typing buffer without applying it to query', async () => {
         const locator = seedThreeFeatures()
         const wrapper = await mountWithUApp(StoreList)
 
         const input = wrapper.find('input[type="text"]')
         await input.setValue('amsterdam')
 
-        expect(locator.query).toBe('amsterdam')
+        expect(locator.searchTerm).toBe('amsterdam')
+        expect(locator.query).toBe('')
+    })
+
+    it('Should commit the highlighted suggestion to query when the user presses Enter while typing', async () => {
+        const locator = seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList)
+
+        const input = wrapper.find('input[type="text"]')
+        await input.setValue('amsterdam')
+        await input.trigger('keydown.enter')
+
+        expect(locator.query.length).toBeGreaterThan(0)
+        expect(locator.query.toLowerCase()).toContain('amsterdam')
     })
 
     it('Should toggle openOnly in the Pinia store when the Open now chip is clicked', async () => {
@@ -170,5 +194,25 @@ describe('StoreList', () => {
         await vi.waitFor(() => {
             expect(wrapper.text()).toContain('No stores match your filters')
         })
+    })
+
+    it('Should mount SearchAutocomplete by default and not the legacy Search input', async () => {
+        seedThreeFeatures()
+        variantStub.current = 'autocomplete'
+
+        const wrapper = await mountWithUApp(StoreList)
+
+        expect(wrapper.find('[data-slot="search-autocomplete"]').exists()).toBe(true)
+        expect(wrapper.findAll('input[type="text"]').length).toBeGreaterThan(0)
+    })
+
+    it('Should mount the legacy Search input when the variant flag is "legacy"', async () => {
+        seedThreeFeatures()
+        variantStub.current = 'legacy'
+
+        const wrapper = await mountWithUApp(StoreList)
+
+        expect(wrapper.find('[data-slot="search-autocomplete"]').exists()).toBe(false)
+        expect(wrapper.find('input[type="text"]').exists()).toBe(true)
     })
 })
