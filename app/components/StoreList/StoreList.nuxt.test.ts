@@ -18,12 +18,45 @@ const seedThreeFeatures = () => {
     return locator
 }
 
+const desktopMatchMedia = (query: string) => ({
+    matches: query.includes('min-width: 768px'),
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+}) as MediaQueryList
+
+const mobileMatchMedia = (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+}) as MediaQueryList
+
+const stubMatchMedia = (impl: (query: string) => MediaQueryList) => {
+    Object.defineProperty(window, 'matchMedia', {
+        writable: true,
+        configurable: true,
+        value: vi.fn(impl),
+    })
+}
+
 describe('StoreList', () => {
     beforeEach(async () => {
         const locator = useStoreLocator()
         locator.featureCollection = null
         locator.clearFilters()
         locator.clearSelection()
+        locator.setMobileView('list')
+
+        stubMatchMedia(desktopMatchMedia)
 
         await setI18nLocale('en')
         vi.useFakeTimers({ toFake: ['Date'] })
@@ -96,7 +129,7 @@ describe('StoreList', () => {
         expect(badge.text()).toBe('2')
     })
 
-    it('Should call selectStore with the clicked feature storeId', async () => {
+    it('Should select the store synchronously and leave mobileView untouched on desktop', async () => {
         const locator = seedThreeFeatures()
         const wrapper = await mountWithUApp(StoreList)
 
@@ -106,7 +139,29 @@ describe('StoreList', () => {
         expect(firstRowButton).toBeDefined()
 
         await firstRowButton!.trigger('click')
+
         expect(locator.selectedStoreId).toBe(amsterdamCentrumFeature.properties.storeId)
+        expect(locator.mobileView).toBe('list')
+    })
+
+    it('Should swap to map first and defer the selection on mobile so the popup is created against the resized canvas', async () => {
+        stubMatchMedia(mobileMatchMedia)
+        const locator = seedThreeFeatures()
+        const wrapper = await mountWithUApp(StoreList)
+
+        const firstRowButton = wrapper.findAll('button').find((button: { text: () => string }) =>
+            button.text().includes(amsterdamCentrumFeature.properties.name),
+        )
+        expect(firstRowButton).toBeDefined()
+
+        await firstRowButton!.trigger('click')
+
+        expect(locator.mobileView).toBe('map')
+        expect(locator.selectedStoreId).toBeNull()
+
+        await vi.waitFor(() => {
+            expect(locator.selectedStoreId).toBe(amsterdamCentrumFeature.properties.storeId)
+        })
     })
 
     it('Should mark the row matching selectedStoreId as selected', async () => {
