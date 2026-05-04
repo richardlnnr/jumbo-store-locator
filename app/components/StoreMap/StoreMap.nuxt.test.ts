@@ -151,4 +151,21 @@ describe('StoreMap', () => {
             expect(locator.pendingSelectionId).toBeNull()
         })
     })
+
+    it('Should reset mobileView to list and clear the selection when the popup emits close', async () => {
+        seedThreeFeatures()
+        const locator = useStoreLocator()
+        locator.selectStore(amsterdamCentrumFeature.properties.storeId)
+        locator.setMobileView('map')
+
+        wrapper = await mountWithUApp(StoreMap)
+
+        const popup = wrapper.findComponent({ name: 'StorePopup' })
+        expect(popup.exists()).toBe(true)
+        popup.vm.$emit('close')
+        await nextTick()
+
+        expect(locator.selectedStoreId).toBeNull()
+        expect(locator.mobileView).toBe('list')
+    })
 })

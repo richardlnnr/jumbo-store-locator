@@ -30,6 +30,11 @@ watch(mobileView, (view) => {
         locator.flushPendingSelection()
     })
 })
+
+const onPopupClose = (): void => {
+    locator.clearSelection()
+    locator.setMobileView('list')
+}
 </script>
 
 <template>
@@ -51,7 +56,7 @@ watch(mobileView, (view) => {
             <StorePopup
                 :store="selectedStore"
                 :user-location="userLocation"
-                @close="locator.clearSelection"
+                @close="onPopupClose"
             />
         </Teleport>
     </section>
