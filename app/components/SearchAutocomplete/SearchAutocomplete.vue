@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { refDebounced } from '@vueuse/core'
+import { refDebounced, useMediaQuery } from '@vueuse/core'
 
 const { t } = useI18n()
 const store = useStoreLocator()
+
+const isDesktopViewport = useMediaQuery('(min-width: 768px)')
+
+watch(isDesktopViewport, () => {
+    store.revertSearchTerm()
+})
 
 const announcement = computed(() => {
     const term = store.searchTerm.trim()

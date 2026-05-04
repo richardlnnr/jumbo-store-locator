@@ -70,4 +70,42 @@ describe('SearchAutocomplete', () => {
             expect(liveRegion.text()).toContain('No stores match xyznotamatch')
         }, { timeout: 2000 })
     })
+
+    it('Should revert the typing buffer to the applied query when the viewport breakpoint flips', async () => {
+        const originalMatchMedia = window.matchMedia
+        const listeners: Array<(event: { matches: boolean }) => void> = []
+        const mql = {
+            matches: true,
+            media: '(min-width: 768px)',
+            onchange: null,
+            addEventListener: (event: string, listener: (event: { matches: boolean }) => void) => {
+                if (event === 'change') listeners.push(listener)
+            },
+            removeEventListener: () => {},
+            addListener: () => {},
+            removeListener: () => {},
+            dispatchEvent: () => false,
+        }
+        window.matchMedia = (() => mql) as unknown as typeof window.matchMedia
+
+        try {
+            const locator = seedThree()
+            locator.setQuery('amsterdam')
+            await mountWithUApp(SearchAutocomplete)
+
+            locator.setSearchTerm('amsterdam-typed-but-not-applied')
+            expect(locator.searchTerm).toBe('amsterdam-typed-but-not-applied')
+
+            mql.matches = false
+            listeners.forEach(listener => listener({ matches: false }))
+
+            await vi.waitFor(() => {
+                expect(locator.searchTerm).toBe('amsterdam')
+                expect(locator.query).toBe('amsterdam')
+            }, { timeout: 1000 })
+        }
+        finally {
+            window.matchMedia = originalMatchMedia
+        }
+    })
 })
