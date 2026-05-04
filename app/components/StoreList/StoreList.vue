@@ -4,7 +4,7 @@ import type { JumboStoreFeature } from '~~/shared/types/geojson'
 
 const { t } = useI18n()
 const store = useStoreLocator()
-const isDesktop = useMediaQuery('(min-width: 768px)')
+const isDesktop = useMediaQuery('(min-width: 768px)', { ssrWidth: 1280 })
 
 const distanceLabelFor = (feature: JumboStoreFeature) =>
     store.userLocation
