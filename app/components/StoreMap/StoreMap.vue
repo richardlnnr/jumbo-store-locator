@@ -4,7 +4,7 @@ const STREETS_STYLE = 'mapbox://styles/mapbox/streets-v12'
 const mapEl = useTemplateRef<HTMLDivElement>('mapEl')
 const { createMap, map, isMapLoaded } = useMapbox()
 const locator = useStoreLocator()
-const { filteredFeatureCollection, selectedStore, userLocation } = storeToRefs(locator)
+const { filteredFeatureCollection, selectedStore, userLocation, mobileView } = storeToRefs(locator)
 
 useStoreSource(map, filteredFeatureCollection)
 useClusterLayers(map)
@@ -21,6 +21,11 @@ onMounted(async () => {
         fitBoundsOptions: { padding: 48, maxZoom: 12 },
         minZoom: 6,
     })
+})
+
+watch(mobileView, (view) => {
+    if (view !== 'map') return
+    requestAnimationFrame(() => map.value?.resize())
 })
 </script>
 

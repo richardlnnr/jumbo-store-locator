@@ -1,6 +1,8 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import { shallowRef } from 'vue'
+import { createPinia, setActivePinia } from 'pinia'
+
 import StoresIndex from './index.vue'
 
 mockNuxtImport('useMapbox', () => () => ({
@@ -8,7 +10,13 @@ mockNuxtImport('useMapbox', () => () => ({
     map: shallowRef(null),
 }))
 
+const switchSelector = '[data-component="mobile-switch-view"]'
+
 describe('stores/index page', () => {
+    beforeEach(() => {
+        setActivePinia(createPinia())
+    })
+
     it('Should render the store list region with the i18n list label', async () => {
         const wrapper = await mountSuspended(StoresIndex)
 
@@ -39,5 +47,21 @@ describe('stores/index page', () => {
         const list = wrapper.find('aside')
         expect(list.classes()).toContain('md:w-[420px]')
         expect(list.classes()).toContain('md:flex-none')
+    })
+
+    it('Should toggle list and map visibility in step with mobileView when MobileSwitchView is activated', async () => {
+        const wrapper = await mountSuspended(StoresIndex)
+
+        const initialList = wrapper.find('aside')
+        const initialMap = wrapper.find('section')
+        expect(initialList.classes()).toContain('flex-1')
+        expect(initialMap.classes()).toContain('hidden')
+
+        await wrapper.find(switchSelector).trigger('click')
+
+        const flippedList = wrapper.find('aside')
+        const flippedMap = wrapper.find('section')
+        expect(flippedList.classes()).toContain('hidden')
+        expect(flippedMap.classes()).toContain('flex-1')
     })
 })
