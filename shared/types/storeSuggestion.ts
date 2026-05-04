@@ -1,5 +1,8 @@
 import type { JumboStoreFeature } from './geojson'
 
+export const SUGGESTION_STORE_LIMIT = 5
+export const SUGGESTION_CITY_LIMIT = 5
+
 export interface CitySuggestion {
     name: string
     rawName: string
@@ -39,8 +42,4 @@ export interface SuggestionCapItem {
     disabled: true
 }
 
-export type SuggestionItem
-    = | SuggestionLabelItem
-        | SuggestionStoreItem
-        | SuggestionCityItem
-        | SuggestionCapItem
+export type SuggestionItem = SuggestionLabelItem | SuggestionStoreItem | SuggestionCityItem | SuggestionCapItem

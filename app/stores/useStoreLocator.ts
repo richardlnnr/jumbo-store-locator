@@ -6,6 +6,7 @@ import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
 import type { MobileView } from '../../shared/types/mobileView'
 import type { Coordinate, JumboStore } from '../../shared/types/store'
 import type { AutocompleteSuggestions } from '../../shared/types/storeSuggestion'
+import { SUGGESTION_CITY_LIMIT, SUGGESTION_STORE_LIMIT } from '../../shared/types/storeSuggestion'
 import { formatCityName } from '../../shared/utils/cityName/cityName'
 import { aggregateCities } from '../utils/aggregateCities/aggregateCities'
 import { filterFeatures } from '../utils/filterFeatures/filterFeatures'
@@ -15,9 +16,6 @@ import { rankFeatures } from '../utils/rankFeatures/rankFeatures'
 
 const QUERY_DEBOUNCE_MS = 200
 const SHRINK_APPLY_DEBOUNCE_MS = 300
-
-export const SUGGESTION_STORE_LIMIT = 5
-export const SUGGESTION_CITY_LIMIT = 5
 
 const emptyFeatureCollection: JumboStoreFeatureCollection = {
     type: 'FeatureCollection',
