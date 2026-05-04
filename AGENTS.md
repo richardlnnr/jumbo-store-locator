@@ -150,16 +150,19 @@ The rule is scoped to **stores**. Component-internal helper types (e.g. a discri
 **Required**:
 
 - Add or extend a file under `shared/types/<name>.ts` with the type.
-- Import it back into the store via `import type { ... } from '../../shared/types/<name>'`.
+- Type-only imports from a store may use either the relative path (`'../../shared/types/<name>'`) or the `~~/shared/<name>` alias.
+- **Value imports** from a store (constants, helper functions exported alongside the types) MUST use the `~~/shared/...` alias. Relative paths crossing out of `app/` for value imports cause Vite's SSR build to externalize the chunk with a literal `.ts` extension, which Nitro's bundler then fails to resolve. The alias is resolved before externalization, so the extension never leaks. The `unit` Vitest project resolves `~~` via `vitest.config.ts` (`resolve.alias`) so unit tests still load these imports.
 - Components and composables import the same type from `~~/shared/types/<name>`.
 
 ```ts
 // shared/types/storeSuggestion.ts
 export interface CitySuggestion { /* ... */ }
 export interface AutocompleteSuggestions { /* ... */ }
+export const SUGGESTION_STORE_LIMIT = 5
 
 // app/stores/useStoreLocator.ts
-import type { AutocompleteSuggestions } from '../../shared/types/storeSuggestion'
+import type { AutocompleteSuggestions } from '~~/shared/types/storeSuggestion'
+import { SUGGESTION_STORE_LIMIT } from '~~/shared/types/storeSuggestion'
 
 // app/components/SearchAutocomplete/Mobile/Mobile.vue
 import type { CitySuggestion } from '~~/shared/types/storeSuggestion'
