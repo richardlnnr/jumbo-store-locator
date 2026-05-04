@@ -47,7 +47,7 @@ const containerClass = computed(() => [
                     class="shrink-0"
                 />
             </div>
-            <span class="text-[13px] text-neutral-600">{{ addressLine }}</span>
+            <span class="text-sm text-neutral-600">{{ addressLine }}</span>
             <div class="flex items-center gap-2 pt-1">
                 <StatusPill :is-open="status.isOpen" />
                 <StoreStatusText :next="status.next" />

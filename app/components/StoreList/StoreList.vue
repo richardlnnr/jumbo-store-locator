@@ -44,7 +44,7 @@ const onRowSelect = (id: string): void => {
                 <h1 class="text-2xl font-black tracking-tight text-neutral-900">
                     {{ t('store-list.title') }}
                 </h1>
-                <p class="text-[13px] text-neutral-600">
+                <p class="text-sm text-neutral-600">
                     {{ t('store-list.count', { count: store.filteredFeatureCollection.features.length }) }}
                 </p>
             </div>
@@ -82,7 +82,7 @@ const onRowSelect = (id: string): void => {
                         content: 'w-80 bg-white border border-neutral-200 shadow-lg ring-0',
                         viewport: 'scrollbar-thin-neutral',
                         item: 'data-highlighted:bg-neutral-50 data-[state=checked]:bg-neutral-50 rounded-lg px-2.5 py-2 gap-2.5 text-neutral-900',
-                        itemLabel: 'text-[13px] text-neutral-900 data-[state=checked]:font-semibold',
+                        itemLabel: 'text-sm text-neutral-900 data-[state=checked]:font-semibold',
                         itemLeadingIcon: 'text-yellow-500',
                     }"
                     @update:model-value="store.setCityFilter"
@@ -92,7 +92,7 @@ const onRowSelect = (id: string): void => {
                         <span
                             v-if="store.cityFilter.length"
                             data-slot="city-count"
-                            class="rounded-full bg-yellow-500 px-1.5 text-[11px] font-bold text-neutral-900"
+                            class="rounded-full bg-yellow-500 px-1.5 text-xs font-bold text-neutral-900"
                         >
                             {{ store.cityFilter.length }}
                         </span>

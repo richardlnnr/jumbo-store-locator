@@ -45,7 +45,7 @@ const dayRows = computed(() => {
                 name="i-lucide-clock"
                 class="size-4 shrink-0 text-neutral-600"
             />
-            <h3 class="text-[13px] font-bold tracking-wider text-neutral-950 uppercase">
+            <h3 class="text-sm font-bold tracking-wider text-neutral-950 uppercase">
                 {{ t('store-popup.opening-hours') }}
             </h3>
         </div>
@@ -61,10 +61,10 @@ const dayRows = computed(() => {
                         : 'text-neutral-600',
                 ]"
             >
-                <span class="text-[13px]">
+                <span class="text-sm">
                     {{ row.isToday ? t('store-popup.today', { weekday: row.weekday }) : row.weekday }}
                 </span>
-                <span class="text-[13px]">
+                <span class="text-sm">
                     {{ row.timeRange ?? t('store-popup.closed-day') }}
                 </span>
             </li>

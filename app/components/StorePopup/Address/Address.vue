@@ -28,7 +28,7 @@ const addressLine2 = computed(() => {
             <p class="text-sm font-semibold text-neutral-950">
                 {{ addressLine1 }}
             </p>
-            <p class="text-[13px] text-neutral-600">
+            <p class="text-sm text-neutral-600">
                 {{ addressLine2 }}
             </p>
         </div>

@@ -45,12 +45,12 @@ const subtitle = computed(() => {
                 <UTooltip :text="props.store.name">
                     <h2
                         data-slot="name"
-                        class="truncate text-[17px] leading-tight font-black text-neutral-950"
+                        class="truncate text-lg leading-tight font-black text-neutral-950"
                     >
                         {{ props.store.name }}
                     </h2>
                 </UTooltip>
-                <p class="truncate text-[13px] text-neutral-600">
+                <p class="truncate text-sm text-neutral-600">
                     {{ subtitle }}
                 </p>
             </div>
@@ -70,7 +70,7 @@ const subtitle = computed(() => {
             <StatusPill :is-open="status.isOpen" />
             <StoreStatusText
                 :next="status.next"
-                class="text-[13px] font-medium text-neutral-950"
+                class="text-sm font-medium text-neutral-950"
             />
         </div>
     </header>

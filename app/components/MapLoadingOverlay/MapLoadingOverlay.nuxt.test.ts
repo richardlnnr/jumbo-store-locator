@@ -39,11 +39,11 @@ describe('MapLoadingOverlay', () => {
         expect(controls.exists()).toBe(true)
     })
 
-    it('Should scale the headline up at md and the caption to text-sm', async () => {
+    it('Should scale the headline up at md and render the caption as text-sm', async () => {
         const wrapper = await mountSuspended(MapLoadingOverlay)
 
         const headline = wrapper.find('p.text-base.md\\:text-lg')
-        const caption = wrapper.find('p.text-\\[13px\\].md\\:text-sm')
+        const caption = wrapper.find('p.text-sm')
         expect(headline.exists()).toBe(true)
         expect(caption.exists()).toBe(true)
     })

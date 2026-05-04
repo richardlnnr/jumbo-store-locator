@@ -13,7 +13,7 @@ await store.fetchStores()
     <main class="relative flex min-h-0 flex-1 flex-col md:flex-row">
         <StoreList
             :class="[
-                'min-h-0 overflow-y-auto bg-white md:w-[420px] md:flex-none md:border-r md:border-neutral-200 md:flex',
+                'min-h-0 overflow-y-auto bg-white md:w-105 md:flex-none md:border-r md:border-neutral-200 md:flex',
                 mobileView === 'list' ? 'flex-1' : 'hidden',
             ]"
             :aria-label="t('app-shell.list-region')"

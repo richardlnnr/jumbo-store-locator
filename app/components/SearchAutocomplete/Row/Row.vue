@@ -79,7 +79,7 @@ const containerClass = computed(() => [
             <UTooltip :text="titleText">
                 <span
                     data-slot="title"
-                    class="block truncate text-[15px] leading-5 font-medium tracking-[-0.005em] text-neutral-900"
+                    class="block truncate text-base leading-5 font-medium tracking-[-0.005em] text-neutral-900"
                     aria-hidden="true"
                 >
                     <template
@@ -97,7 +97,7 @@ const containerClass = computed(() => [
             <UTooltip :text="subline">
                 <span
                     data-slot="subline"
-                    class="block truncate text-[13px] leading-[18px] text-neutral-600"
+                    class="block truncate text-sm leading-4.5 text-neutral-600"
                 >
                     {{ subline }}
                 </span>

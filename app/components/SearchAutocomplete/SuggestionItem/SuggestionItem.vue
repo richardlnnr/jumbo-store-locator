@@ -13,7 +13,7 @@ const distanceLabelFor = useStoreDistanceLabel()
     <h3
         v-if="item.kind === 'label'"
         data-slot="suggestion-section-label"
-        class="px-4 pt-3 pb-2 text-[12px] font-semibold tracking-[0.06em] text-neutral-700 uppercase"
+        class="px-4 pt-3 pb-2 text-xs font-semibold tracking-[0.06em] text-neutral-700 uppercase"
     >
         {{ item.label }}
     </h3>

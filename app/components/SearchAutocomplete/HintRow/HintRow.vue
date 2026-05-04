@@ -5,7 +5,7 @@ const { t } = useI18n()
 <template>
     <div
         data-slot="hint-row"
-        class="flex items-center gap-3.5 border-t border-neutral-100 bg-neutral-50 px-4 py-2.5 text-[12px] text-neutral-600"
+        class="flex items-center gap-3.5 border-t border-neutral-100 bg-neutral-50 px-4 py-2.5 text-xs text-neutral-600"
         aria-hidden="true"
     >
         <span class="flex items-center gap-1.5">

@@ -3,7 +3,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-    <header class="flex h-[55px] items-center justify-between border-b border-neutral-100 bg-white px-4 md:h-[72px] md:px-8">
+    <header class="flex h-13.75 items-center justify-between border-b border-neutral-100 bg-white px-4 md:h-18 md:px-8">
         <div class="flex items-center gap-3 md:gap-4">
             <NuxtImg
                 src="/jumbo-logo.svg"
