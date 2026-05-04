@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import { shallowRef } from 'vue'
-import { createPinia, setActivePinia } from 'pinia'
+import { nextTick, shallowRef } from 'vue'
 
+import { useStoreLocator } from '~~/app/stores/useStoreLocator'
 import StoresIndex from './index.vue'
 
 mockNuxtImport('useMapbox', () => () => ({
@@ -14,7 +14,12 @@ const switchSelector = '[data-component="mobile-switch-view"]'
 
 describe('stores/index page', () => {
     beforeEach(() => {
-        setActivePinia(createPinia())
+        const locator = useStoreLocator()
+        locator.flushPendingSelection()
+        locator.clearSelection()
+        locator.featureCollection = null
+        locator.clearFilters()
+        locator.setMobileView('list')
     })
 
     it('Should render the store list region with the i18n list label', async () => {
@@ -63,5 +68,18 @@ describe('stores/index page', () => {
         const flippedMap = wrapper.find('section')
         expect(flippedList.classes()).toContain('hidden')
         expect(flippedMap.classes()).toContain('flex-1')
+    })
+
+    it('Should keep both list and map visible at md+ regardless of mobileView', async () => {
+        const wrapper = await mountSuspended(StoresIndex)
+        const locator = useStoreLocator()
+
+        locator.setMobileView('map')
+        await nextTick()
+
+        const aside = wrapper.find('aside')
+        const section = wrapper.find('section')
+        expect(aside.classes()).toContain('md:flex')
+        expect(section.classes()).toContain('md:block')
     })
 })

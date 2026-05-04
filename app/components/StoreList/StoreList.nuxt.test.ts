@@ -18,8 +18,8 @@ const seedThreeFeatures = () => {
     return locator
 }
 
-const desktopMatchMedia = (query: string) => ({
-    matches: query.includes('min-width: 768px'),
+const buildMatchMedia = (matches: boolean) => (query: string) => ({
+    matches,
     media: query,
     onchange: null,
     addListener: vi.fn(),
@@ -29,23 +29,8 @@ const desktopMatchMedia = (query: string) => ({
     dispatchEvent: vi.fn(),
 }) as MediaQueryList
 
-const mobileMatchMedia = (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-}) as MediaQueryList
-
-const stubMatchMedia = (impl: (query: string) => MediaQueryList) => {
-    Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        configurable: true,
-        value: vi.fn(impl),
-    })
+const stubMatchMedia = (matches: boolean) => {
+    vi.stubGlobal('matchMedia', vi.fn(buildMatchMedia(matches)))
 }
 
 describe('StoreList', () => {
@@ -57,7 +42,7 @@ describe('StoreList', () => {
         locator.clearFilters()
         locator.setMobileView('list')
 
-        stubMatchMedia(desktopMatchMedia)
+        stubMatchMedia(true)
 
         await setI18nLocale('en')
         vi.useFakeTimers({ toFake: ['Date'] })
@@ -66,6 +51,7 @@ describe('StoreList', () => {
 
     afterEach(() => {
         vi.useRealTimers()
+        vi.unstubAllGlobals()
     })
 
     it('Should expose a region landmark with the provided aria-label', async () => {
@@ -147,7 +133,7 @@ describe('StoreList', () => {
     })
 
     it('Should queue a pending selection and flip mobileView to map on mobile, leaving the actual selection for StoreMap to flush', async () => {
-        stubMatchMedia(mobileMatchMedia)
+        stubMatchMedia(false)
         const locator = seedThreeFeatures()
         const wrapper = await mountWithUApp(StoreList)
 
