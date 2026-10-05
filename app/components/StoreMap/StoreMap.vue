@@ -4,7 +4,7 @@ const STREETS_STYLE = 'mapbox://styles/mapbox/streets-v12'
 const mapEl = useTemplateRef<HTMLDivElement>('mapEl')
 const { createMap, map, isMapLoaded } = useMapbox()
 const locator = useStoreLocator()
-const { filteredFeatureCollection, selectedStore, userLocation, mobileView } = storeToRefs(locator)
+const { filteredFeatureCollection, selectedStore, mobileView } = storeToRefs(locator)
 
 useStoreSource(map, filteredFeatureCollection)
 useClusterLayers(map)
@@ -49,13 +49,16 @@ const onPopupClose = (): void => {
         <Transition name="map-loading-fade">
             <MapLoadingOverlay v-if="!isMapLoaded" />
         </Transition>
+        <StoreMapControls
+            v-if="isMapLoaded && map"
+            :map="map"
+        />
         <Teleport
             v-if="selectedStore && popupContainer"
             :to="popupContainer"
         >
             <StorePopup
                 :store="selectedStore"
-                :user-location="userLocation"
                 @close="onPopupClose"
             />
         </Teleport>

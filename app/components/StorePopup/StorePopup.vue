@@ -2,11 +2,10 @@
 import { onKeyStroke } from '@vueuse/core'
 import { FocusScope } from 'reka-ui'
 
-import type { Coordinate, JumboStore } from '~~/shared/types/store'
+import type { JumboStore } from '~~/shared/types/store'
 
 const props = defineProps<{
     store: JumboStore
-    userLocation?: Coordinate | null
 }>()
 
 const emit = defineEmits<{ close: [] }>()
@@ -29,7 +28,6 @@ onKeyStroke('Escape', () => emit('close'))
         >
             <StorePopupHeader
                 :store="store"
-                :user-location="userLocation"
                 @close="emit('close')"
             />
             <div

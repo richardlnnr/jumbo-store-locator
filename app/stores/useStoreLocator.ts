@@ -4,7 +4,7 @@ import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 
 import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
 import type { MobileView } from '../../shared/types/mobileView'
-import type { Coordinate, JumboStore } from '../../shared/types/store'
+import type { JumboStore } from '../../shared/types/store'
 import type { AutocompleteSuggestions } from '~~/shared/types/storeSuggestion'
 import { SUGGESTION_CITY_LIMIT, SUGGESTION_STORE_LIMIT } from '~~/shared/types/storeSuggestion'
 import { formatCityName } from '~~/shared/utils/cityName/cityName'
@@ -13,6 +13,7 @@ import { filterFeatures } from '../utils/filterFeatures/filterFeatures'
 import { matchFeatures } from '../utils/matchFeatures/matchFeatures'
 import { rankCities } from '../utils/rankCities/rankCities'
 import { rankFeatures } from '../utils/rankFeatures/rankFeatures'
+import { useUserLocationStore } from './useUserLocationStore'
 
 const QUERY_DEBOUNCE_MS = 200
 const SHRINK_APPLY_DEBOUNCE_MS = 300
@@ -35,7 +36,7 @@ export const useStoreLocator = defineStore('storeLocator', () => {
     const error = ref<Error | null>(null)
 
     const selectedStoreId = ref<string | null>(null)
-    const userLocation = ref<Coordinate | null>(null)
+    const userLocationStore = useUserLocationStore()
 
     const query = ref('')
     const searchTerm = ref('')
@@ -109,7 +110,7 @@ export const useStoreLocator = defineStore('storeLocator', () => {
             cityFilter: cityFilter.value,
             openOnly: openOnly.value,
             now: openOnly.value ? new Date() : null,
-            userLocation: userLocation.value,
+            userLocation: userLocationStore.coordinate,
         })
 
         if (features.length === 0) return emptyFeatureCollection
@@ -141,10 +142,6 @@ export const useStoreLocator = defineStore('storeLocator', () => {
 
     function clearSelection(): void {
         selectedStoreId.value = null
-    }
-
-    function setUserLocation(coordinate: Coordinate | null): void {
-        userLocation.value = coordinate
     }
 
     function setQuery(value: string): void {
@@ -221,7 +218,6 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         loading,
         error,
         selectedStoreId,
-        userLocation,
         query,
         searchTerm,
         cityFilter,
@@ -236,7 +232,6 @@ export const useStoreLocator = defineStore('storeLocator', () => {
         fetchStores,
         selectStore,
         clearSelection,
-        setUserLocation,
         setQuery,
         setSearchTerm,
         applySearchTerm,

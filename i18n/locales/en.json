@@ -52,7 +52,22 @@
     "now-showing-map": "Now showing map"
   },
   "store-map": {
-    "placeholder": "Store map coming soon"
+    "placeholder": "Store map coming soon",
+    "zoom-in": "Zoom in",
+    "zoom-out": "Zoom out"
+  },
+  "geolocation": {
+    "banner-message": "Find nearby stores with your precise location",
+    "banner-submessage": "We're showing distances from your area. Allow precise location for accurate results.",
+    "banner-allow": "Allow",
+    "banner-dismiss": "Not now",
+    "banner-learn-more": "How we use your location",
+    "blocked-note": "Location blocked in your browser — showing approximate distances.",
+    "locator-tooltip-locate": "Use my location",
+    "locator-tooltip-locating": "Locating…",
+    "locator-tooltip-blocked": "Location blocked — enable in your browser settings",
+    "locator-tooltip-retry": "Try again",
+    "locator-tooltip-upgrade": "Use my exact location"
   },
   "map-loading": {
     "headline": "Loading map",
@@ -109,6 +124,23 @@
   },
   "distance": {
     "km": "{distance} km",
-    "m": "{distance} m"
+    "m": "{distance} m",
+    "km-approx": "≈ {distance} km"
+  },
+  "privacy": {
+    "title": "How we use your location",
+    "intro": "We use your location only to sort stores by distance and to recenter the map. We never store it on a server, and we never share it for advertising.",
+    "back-link": "Back to the store locator",
+    "precise-title": "Precise location, only with your consent",
+    "precise-body": "When you click \"Allow\" on the banner — or the locator button on the map — your browser shows its own permission dialog. If you grant it, your device sends your latitude and longitude directly to your browser. We then use that coordinate to sort the list and to recenter the map. The coordinate is kept in your browser tab only and disappears when you close it.",
+    "coarse-title": "Approximate area, when precise isn't available",
+    "coarse-body": "If precise location isn't available — first visit, or blocked at browser/OS level — your browser sends a short request to get.geojs.io, a free public service. They use your IP address to estimate an approximate latitude and longitude, then return only those two numbers to your browser. We never see your IP. Distances are shown rounded with an \"≈\" prefix so it's clear the result is approximate.",
+    "never-title": "What we never do",
+    "never-servers": "Send your location to our own servers or to any analytics tool.",
+    "never-ip": "Store your IP address. Your browser talks to get.geojs.io directly.",
+    "never-persist": "Persist anything across sessions. The location lives only in this browser tab.",
+    "never-ads": "Use it for advertising, profiling, or any purpose other than sorting stores.",
+    "control-title": "Your control",
+    "control-body": "You can revoke precise access at any time from your browser's site settings. To stop the approximate fallback as well, dismiss the banner with \"Not now\" — the locator will fall back to alphabetical sort."
   }
 }

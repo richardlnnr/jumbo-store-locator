@@ -52,7 +52,22 @@
     "now-showing-map": "Kaart wordt weergegeven"
   },
   "store-map": {
-    "placeholder": "Winkelkaart komt binnenkort"
+    "placeholder": "Winkelkaart komt binnenkort",
+    "zoom-in": "Inzoomen",
+    "zoom-out": "Uitzoomen"
+  },
+  "geolocation": {
+    "banner-message": "Vind winkels in de buurt met je precieze locatie",
+    "banner-submessage": "We tonen afstanden vanuit jouw omgeving. Sta precieze locatie toe voor nauwkeurige resultaten.",
+    "banner-allow": "Toestaan",
+    "banner-dismiss": "Niet nu",
+    "banner-learn-more": "Hoe we je locatie gebruiken",
+    "blocked-note": "Locatie geblokkeerd in je browser — afstanden zijn benaderingen.",
+    "locator-tooltip-locate": "Gebruik mijn locatie",
+    "locator-tooltip-locating": "Locatie ophalen…",
+    "locator-tooltip-blocked": "Locatie geblokkeerd — schakel in via de browserinstellingen",
+    "locator-tooltip-retry": "Opnieuw proberen",
+    "locator-tooltip-upgrade": "Gebruik mijn exacte locatie"
   },
   "map-loading": {
     "headline": "Kaart laden",
@@ -109,6 +124,23 @@
   },
   "distance": {
     "km": "{distance} km",
-    "m": "{distance} m"
+    "m": "{distance} m",
+    "km-approx": "≈ {distance} km"
+  },
+  "privacy": {
+    "title": "Hoe we je locatie gebruiken",
+    "intro": "We gebruiken je locatie alleen om winkels op afstand te sorteren en de kaart te centreren. We slaan niets op een server op en delen je locatie nooit voor advertenties.",
+    "back-link": "Terug naar de winkelzoeker",
+    "precise-title": "Precieze locatie, alleen met jouw toestemming",
+    "precise-body": "Wanneer je op \"Toestaan\" klikt in de banner — of op de locatieknop op de kaart — toont je browser zijn eigen toestemmingsdialoog. Als je toestemming geeft, stuurt je apparaat de breedtegraad en lengtegraad rechtstreeks naar je browser. We gebruiken die coördinaat om de lijst te sorteren en de kaart te centreren. De coördinaat blijft alleen in je browsertab en verdwijnt wanneer je deze sluit.",
+    "coarse-title": "Bij benadering, als precies niet beschikbaar is",
+    "coarse-body": "Als precieze locatie niet beschikbaar is — eerste bezoek, of geblokkeerd op browser- of OS-niveau — stuurt je browser een kort verzoek naar get.geojs.io, een gratis openbare service. Zij gebruiken je IP-adres om een geschatte breedte- en lengtegraad te bepalen en sturen alleen die twee getallen terug naar je browser. Wij zien je IP-adres nooit. Afstanden worden afgerond weergegeven met een \"≈\" prefix om duidelijk te maken dat het resultaat bij benadering is.",
+    "never-title": "Wat we nooit doen",
+    "never-servers": "Je locatie naar onze eigen servers of naar analysetools sturen.",
+    "never-ip": "Je IP-adres opslaan. Je browser communiceert rechtstreeks met get.geojs.io.",
+    "never-persist": "Iets opslaan tussen sessies. De locatie bestaat alleen in deze browsertab.",
+    "never-ads": "Het gebruiken voor advertenties, profilering of enig ander doel dan winkels sorteren.",
+    "control-title": "Jouw controle",
+    "control-body": "Je kunt precieze toegang op elk moment intrekken via de site-instellingen van je browser. Om ook de benadering te stoppen, sluit je de banner met \"Niet nu\" — de locator valt terug op alfabetische volgorde."
   }
 }

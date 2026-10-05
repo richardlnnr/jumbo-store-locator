@@ -119,6 +119,9 @@ const onRowSelect = (id: string): void => {
                     </template>
                 </USelectMenu>
             </div>
+
+            <StoreListConsentBanner />
+            <StoreListBlockedNote />
         </header>
 
         <ul
@@ -131,7 +134,7 @@ const onRowSelect = (id: string): void => {
             >
                 <StoreListItem
                     :store="feature.properties"
-                    :distance-label="distanceLabelFor(feature)"
+                    :distance-label="distanceLabelFor(feature.properties.location)"
                     :selected="store.selectedStoreId === feature.properties.storeId"
                     @select="onRowSelect(feature.properties.storeId)"
                 />

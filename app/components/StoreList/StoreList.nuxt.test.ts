@@ -2,9 +2,11 @@ import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed } from 'vue'
 import { useStoreLocator } from '~~/app/stores/useStoreLocator'
+import { useUserLocationStore } from '~~/app/stores/useUserLocationStore'
 import { setI18nLocale } from '~~/test-utils/i18n'
 import { mountWithUApp } from '~~/test-utils/mountWithUApp'
 import {
+    AMSTERDAM,
     amsterdamCentrumFeature,
     amsterdamSouthFeature,
     eindhovenFeature,
@@ -54,6 +56,7 @@ describe('StoreList', () => {
         stubMatchMedia(true)
 
         variantStub.current = 'autocomplete'
+        useUserLocationStore().$resetForTests()
 
         await setI18nLocale('en')
         vi.useFakeTimers({ toFake: ['Date'] })
@@ -194,6 +197,18 @@ describe('StoreList', () => {
         await vi.waitFor(() => {
             expect(wrapper.text()).toContain('No stores match your filters')
         })
+    })
+
+    it('Should render coarse distance labels rounded to whole km with the approx prefix', async () => {
+        seedThreeFeatures()
+        useUserLocationStore().setCoarseLocation(AMSTERDAM)
+
+        const wrapper = await mountWithUApp(StoreList)
+
+        await vi.waitFor(() => {
+            expect(wrapper.text()).toMatch(/≈\s*\d+\s*km/)
+        })
+        expect(wrapper.text()).not.toMatch(/≈\s*\d+\.\d+\s*km/)
     })
 
     it('Should mount SearchAutocomplete by default and not the legacy Search input', async () => {

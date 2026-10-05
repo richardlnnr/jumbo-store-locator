@@ -1,14 +1,7 @@
-import bboxPolygon from '@turf/bbox-polygon'
-import booleanPointInPolygon from '@turf/boolean-point-in-polygon'
-
-import type { JumboStore, StoreLocation } from '../../shared/types/store'
+import type { JumboStore } from '../../shared/types/store'
 import type { JumboStoreFeature, JumboStoreFeatureCollection } from '../../shared/types/geojson'
 import { formatCityName } from '../../shared/utils/cityName/cityName'
-
-const NETHERLANDS_AREA = bboxPolygon([3, 50, 8, 54])
-
-const isInNetherlands = (location: StoreLocation): boolean =>
-    booleanPointInPolygon([location.longitude, location.latitude], NETHERLANDS_AREA)
+import { isInNetherlands } from '../../shared/utils/isInNetherlands/isInNetherlands'
 
 const toFeature = (store: JumboStore): JumboStoreFeature => ({
     type: 'Feature',
