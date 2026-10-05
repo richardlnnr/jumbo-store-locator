@@ -21,7 +21,7 @@ const distanceLabelFor = useStoreDistanceLabel()
         v-else-if="item.kind === 'store'"
         variant="store"
         :feature="item.feature"
-        :distance-label="distanceLabelFor(item.feature)"
+        :distance-label="distanceLabelFor(item.feature.properties.location)"
         :query="query"
         class="w-full"
     />

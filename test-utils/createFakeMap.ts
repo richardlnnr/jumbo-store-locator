@@ -15,6 +15,13 @@ export const createFakeMap = (initialClientHeight = 900) => {
 
     const setData = vi.fn()
     const easeTo = vi.fn()
+    const flyTo = vi.fn()
+    const addControl = vi.fn()
+    const zoomIn = vi.fn()
+    const zoomOut = vi.fn()
+    const getZoom = vi.fn(() => 10)
+    const getMinZoom = vi.fn(() => 6)
+    const getMaxZoom = vi.fn(() => 22)
     const getClusterExpansionZoom = vi.fn(
         (_clusterId: number, callback: (error: Error | null, zoom: number) => void) => {
             callback(null, 11)
@@ -48,6 +55,13 @@ export const createFakeMap = (initialClientHeight = 900) => {
         hasImage,
         loadImage,
         easeTo,
+        flyTo,
+        addControl,
+        zoomIn,
+        zoomOut,
+        getZoom,
+        getMinZoom,
+        getMaxZoom,
         remove,
         resize,
         getCanvas: () => canvas,
@@ -94,6 +108,13 @@ export const createFakeMap = (initialClientHeight = 900) => {
             remove,
             resize,
             easeTo,
+            flyTo,
+            addControl,
+            zoomIn,
+            zoomOut,
+            getZoom,
+            getMinZoom,
+            getMaxZoom,
             getClusterExpansionZoom,
         },
         layerHandlers,

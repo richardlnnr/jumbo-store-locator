@@ -83,12 +83,43 @@ describe('getDistanceLabel', () => {
     })
 
     it('Should only return translation keys that exist in every supported locale', () => {
-        const possibleKeys = ['distance.km', 'distance.m'] as const
+        const possibleKeys = ['distance.km', 'distance.m', 'distance.km-approx'] as const
 
         for (const fullKey of possibleKeys) {
             const suffix = fullKey.replace(/^distance\./, '')
             expect(enLocale.distance).toHaveProperty(suffix)
             expect(nlLocale.distance).toHaveProperty(suffix)
         }
+    })
+
+    it('Should return the km-approx key with whole-km values when precision is coarse', () => {
+        const label = getDistanceLabel(AMSTERDAM, ROTTERDAM, 'coarse')
+
+        expect(label.key).toBe('distance.km-approx')
+        expect(label.distance).toBe(57)
+    })
+
+    it('Should round coarse distances to the nearest whole kilometer', () => {
+        const label = getDistanceLabel(AMSTERDAM, ROTTERDAM, 'coarse')
+
+        expect(Number.isInteger(label.distance)).toBe(true)
+    })
+
+    it('Should floor coarse distances under a kilometer to "1 km"', () => {
+        const labelHalf = getDistanceLabel(AMSTERDAM, NEARBY_AMSTERDAM_500M, 'coarse')
+        const labelNear = getDistanceLabel(AMSTERDAM, NEARBY_AMSTERDAM_990M, 'coarse')
+        const labelSame = getDistanceLabel(AMSTERDAM, AMSTERDAM, 'coarse')
+
+        expect(labelHalf.key).toBe('distance.km-approx')
+        expect(labelHalf.distance).toBe(1)
+        expect(labelNear.distance).toBe(1)
+        expect(labelSame.distance).toBe(1)
+    })
+
+    it('Should default to precise behaviour when no precision is given', () => {
+        const omitted = getDistanceLabel(AMSTERDAM, ROTTERDAM)
+        const explicit = getDistanceLabel(AMSTERDAM, ROTTERDAM, 'precise')
+
+        expect(omitted).toEqual(explicit)
     })
 })

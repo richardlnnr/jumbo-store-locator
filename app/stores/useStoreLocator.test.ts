@@ -15,6 +15,7 @@ import {
 } from '../../shared/types/store.mock'
 import type { JumboStoreFeatureCollection } from '../../shared/types/geojson'
 import { useStoreLocator } from './useStoreLocator'
+import { useUserLocationStore } from './useUserLocationStore'
 
 const fixedNow = new Date(2025, 0, 7, 14, 0, 0)
 
@@ -50,7 +51,6 @@ describe('useStoreLocator', () => {
         expect(store.loading).toBe(false)
         expect(store.error).toBeNull()
         expect(store.selectedStoreId).toBeNull()
-        expect(store.userLocation).toBeNull()
         expect(store.query).toBe('')
         expect(store.searchTerm).toBe('')
         expect(store.cityFilter).toEqual([])
@@ -178,18 +178,19 @@ describe('useStoreLocator', () => {
         expect(store.selectedStore).toBe(eindhovenFeature.properties)
     })
 
-    it('Should clear the selection without affecting userLocation', async () => {
+    it('Should clear the selection without affecting the user location', async () => {
         fetchMock.mockResolvedValueOnce(sampleFeatureCollection)
         const store = useStoreLocator()
+        const userLocation = useUserLocationStore()
         await store.fetchStores()
         store.selectStore('amsterdam-1')
-        store.setUserLocation(AMSTERDAM)
+        userLocation.setPreciseLocation(AMSTERDAM)
 
         store.clearSelection()
 
         expect(store.selectedStoreId).toBeNull()
         expect(store.selectedStore).toBeNull()
-        expect(store.userLocation).toEqual(AMSTERDAM)
+        expect(userLocation.coordinate).toEqual(AMSTERDAM)
     })
 
     it('Should expose cities as a unique sorted list derived from features', async () => {
@@ -250,13 +251,13 @@ describe('useStoreLocator', () => {
         expect(idsAfterDebounce).toEqual(['eindhoven-1'])
     })
 
-    it('Should sort filteredFeatureCollection by distance when userLocation is set', async () => {
+    it('Should sort filteredFeatureCollection by distance when the user location store has a coordinate', async () => {
         fetchMock.mockResolvedValueOnce(sampleFeatureCollection)
         const store = useStoreLocator()
         await store.fetchStores()
 
         store.setCityFilter(['AMSTERDAM'])
-        store.setUserLocation(AMSTERDAM)
+        useUserLocationStore().setPreciseLocation(AMSTERDAM)
 
         const ids = store.filteredFeatureCollection.features.map(feature => feature.properties.storeId)
         expect(ids).toEqual(['amsterdam-1', 'amsterdam-2'])

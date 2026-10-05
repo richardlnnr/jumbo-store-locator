@@ -121,14 +121,14 @@ describe('StoreMap', () => {
     })
 
     it('Should hide the loading overlay once isMapLoaded flips to true', async () => {
-        const mounted = await mountStoreMap()
-        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(true)
+        wrapper = await mountWithUApp(StoreMap)
+        expect(wrapper.find('output[aria-busy="true"]').exists()).toBe(true)
 
         isMapLoadedRef.value = true
         await nextTick()
         await nextTick()
 
-        expect(mounted.find('output[aria-busy="true"]').exists()).toBe(false)
+        expect(wrapper.find('output[aria-busy="true"]').exists()).toBe(false)
     })
 
     it('Should call map.resize when mobileView flips to map', async () => {

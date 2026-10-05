@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
-import type { Coordinate, JumboStore } from '~~/shared/types/store'
+import type { JumboStore } from '~~/shared/types/store'
 
 const props = defineProps<{
     store: JumboStore
-    userLocation?: Coordinate | null
 }>()
 
 const emit = defineEmits<{ close: [] }>()
@@ -18,11 +17,11 @@ const typeLabel = computed(() => t(
     `store-popup.location-type.${props.store.facilities.locationType.toLowerCase().replaceAll('_', '-')}`,
 ))
 
-const distanceLabel = computed(() =>
-    props.userLocation
-        ? getDistanceLabel(props.userLocation, props.store.location)
-        : null,
-)
+const distanceLabelFor = useStoreDistanceLabel()
+
+const distanceLabel = computed(() => {
+    return distanceLabelFor(props.store.location)
+})
 
 const subtitle = computed(() => {
     if (distanceLabel.value) {

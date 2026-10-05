@@ -132,6 +132,16 @@ Returns a [GeoJSON](https://geojson.org/) `FeatureCollection` where each `Featur
 
 The handler reads `server/assets/data/jumbo-store-data.json` on every request and projects it into GeoJSON, treating the file as a thin integration layer over an upstream feed: adding a store to the source JSON surfaces it through `/api/stores` with no code change.
 
+## Privacy
+
+The "Use my location" feature has three layers, all firing on app load:
+
+1. **Cached precise** — if you've already granted precise location in this browser tab, the latitude/longitude is hydrated from `sessionStorage` (30-minute TTL, per-tab, never sent to any server).
+2. **Live precise** — when permission is `'granted'` the browser silently calls `navigator.geolocation.getCurrentPosition`; when permission is `'prompt'` an in-app banner asks for the upgrade. Coordinates stay in the browser tab and are never transmitted to our servers.
+3. **Approximate fallback** — if precise isn't available, the browser sends a request to <https://get.geojs.io/v1/ip/geo.json>, a free public IP-geolocation service. We read only the `latitude` and `longitude` fields from the response; the request is `credentials: 'omit'` and times out after 5 seconds. Distances derived from this fallback are rendered with an `≈` prefix and rounded to 1 km. We never see or store your IP — your browser talks to geojs.io directly.
+
+A short explanation of the same flow lives at `/privacy`. Nothing is sent to analytics; nothing is shared for advertising.
+
 ## Production
 
 This project is deployed via **Vercel**:

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Coordinate, JumboStore } from '~~/shared/types/store'
 import { everyDay, hours, supermarketFixture } from '~~/shared/types/store.mock'
+import { useUserLocationStore } from '~~/app/stores/useUserLocationStore'
 import { setI18nLocale } from '~~/test-utils/i18n'
 import { mountWithUApp } from '~~/test-utils/mountWithUApp'
 
@@ -28,7 +29,7 @@ const openTodayStore: JumboStore = {
 describe('StorePopupHeader', () => {
     beforeEach(async () => {
         await setI18nLocale('en')
-        // Wednesday at 10:00 Amsterdam-time; supermarketFixture is open Wed 08:00–21:00.
+        useUserLocationStore().$resetForTests()
         vi.useFakeTimers({ toFake: ['Date'] })
         vi.setSystemTime(new Date('2026-04-29T10:00:00+02:00'))
     })
@@ -53,10 +54,9 @@ describe('StorePopupHeader', () => {
     })
 
     it('Should compose the subtitle as type and distance when a user location is provided', async () => {
-        const wrapper = await mountWithUApp(Header, {
-            store: supermarketFixture,
-            userLocation: userLocationNearSupermarket,
-        })
+        useUserLocationStore().setPreciseLocation(userLocationNearSupermarket)
+
+        const wrapper = await mountWithUApp(Header, { store: supermarketFixture })
 
         expect(wrapper.text()).toMatch(/Supermarket · \d+(?:\.\d+)? km/)
     })
@@ -97,5 +97,14 @@ describe('StorePopupHeader', () => {
         const wrapper = await mountWithUApp(Header, { store: supermarketFixture })
 
         expect(wrapper.find('[aria-label="Popup sluiten"]').exists()).toBe(true)
+    })
+
+    it('Should render the coarse distance label rounded to whole km with the approx prefix', async () => {
+        useUserLocationStore().setCoarseLocation(userLocationNearSupermarket)
+
+        const wrapper = await mountWithUApp(Header, { store: supermarketFixture })
+
+        expect(wrapper.text()).toMatch(/≈\s*\d+\s*km/)
+        expect(wrapper.text()).not.toMatch(/≈\s*\d+\.\d+\s*km/)
     })
 })
